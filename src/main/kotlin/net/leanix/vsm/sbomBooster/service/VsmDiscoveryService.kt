@@ -16,7 +16,6 @@ import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.util.Base64
 
 @Service
 class VsmDiscoveryService(
@@ -27,16 +26,11 @@ class VsmDiscoveryService(
         private val logger: Logger = LoggerFactory.getLogger(VsmDiscoveryService::class.java)
     }
 
-    fun sendToVsm(projectUrl: String, downloadedFolder: String, leanIxToken: String) {
+    fun sendToVsm(projectUrl: String, downloadedFolder: String, leanIxToken: String, region: String) {
         val restTemplate = RestTemplate()
         val headers = HttpHeaders()
         headers.contentType = MediaType.MULTIPART_FORM_DATA
         headers.set("Authorization", "Bearer $leanIxToken")
-
-        val decoder = Base64.getDecoder()
-        val payload = String(decoder.decode(leanIxToken.split(".")[1]))
-        var region = payload.substringAfterLast("https://").substringBefore(".")
-        if (region == "leanix") region = "eu"
 
         val multipartBodyBuilder = MultipartBodyBuilder()
 

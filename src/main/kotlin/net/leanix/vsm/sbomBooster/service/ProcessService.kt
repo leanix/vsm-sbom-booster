@@ -34,7 +34,7 @@ class ProcessService(
                 ortService.analyzeProject(downloadedFolder)
                 ortService.generateSbom(downloadedFolder)
                 val accessToken = mtMService.getAccessToken(region, leanIxToken)
-                vsmDiscoveryService.sendToVsm(projectUrl, downloadedFolder, accessToken!!)
+                vsmDiscoveryService.sendToVsm(projectUrl, downloadedFolder, accessToken!!, region)
             } catch (e: Exception) {
                 logger.error(e.message)
             } finally {
