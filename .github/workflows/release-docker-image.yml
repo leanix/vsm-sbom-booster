@@ -65,6 +65,6 @@ jobs:
         with:
           context: ./
           file: Dockerfile
-          tags: ${{ env.ACR_PUBLIC_LOGIN }}/vsm-github-broker:${{ steps.tag-action.outputs.tag }}, ${{ env.ACR_PUBLIC_LOGIN }}/vsm-github-broker:latest
+          tags: ${{ env.ACR_PUBLIC_LOGIN }}/vsm-sbom-booster:${{ steps.tag-action.outputs.tag }}, ${{ env.ACR_PUBLIC_LOGIN }}/vsm-sbom-booster:latest
           push: true
           ssh: default=${{ env.SSH_AUTH_SOCK }}

@@ -19,5 +19,5 @@ docker run --platform linux/x86_64
            -e SOURCE_TYPE='<sourceType>' \
            -e SOURCE_INSTANCE='<sourceInstance>' \
            -e CONCURRENCY_FACTOR='1' \
-           vsm-sbom-booster -rm
+           leanixacrpublic.azurecr.io/vsm-sbom-booster -rm
 ```
