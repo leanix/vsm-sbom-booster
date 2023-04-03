@@ -1,0 +1,11 @@
+leanix:
+  vsm:
+    mounted-volume: ${MOUNTED_VOLUME:}
+    leanIx-token: ${LEANIX_TOKEN:}
+    github-graphql-api-url: ${GITHUB_GRAPHQL_API_URL:}
+    github-token: ${GITHUB_TOKEN:}
+    github-organization: ${GITHUB_ORGANIZATION:}
+    region: ${REGION:}
+    concurrency-factor: ${CONCURRENCY_FACTOR:1}
+    source-type: ${SOURCE_TYPE:}
+    source-instance: ${SOURCE_INSTANCE:}

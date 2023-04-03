@@ -1,0 +1,57 @@
+.idea
+.vscode
+
+# Connectors
+**/node_modules
+**/dist
+**/.env
+**/combined.log
+**/error.log
+**/coverage
+
+### OSX ###
+.DS_Store
+
+### Server ###
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+
+### K8s ###
+k8s/*.d.ts
+k8s/*.js
+!k8s/jest.config.js
+k8s/node_modules
+k8s/dist/
+k8s/imports
+k8s/k8s-deployment
+k8s/__snapshots__
+
+application-local.yaml
+application-local.yml
+
+db-data

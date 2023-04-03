@@ -1,0 +1,14 @@
+query GetRepositoriesPaginated($login: String!, $first: Int!, $after: String){
+    viewer {
+        organization(login: $login) {
+            repositories(first: $first, after: $after) {
+                edges {
+                    cursor
+                    node {
+                        url
+                    }
+                }
+            }
+        }
+    }
+}

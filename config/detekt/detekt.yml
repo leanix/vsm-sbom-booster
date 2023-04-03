@@ -1,0 +1,33 @@
+complexity:
+  LargeClass:
+    active: true
+    excludes: [ '**/test/**' ]
+  LongMethod:
+    active: true
+    excludes: [ '**/test/**' ]
+
+naming:
+  FunctionNaming:
+    active: true
+    excludes: [ '**/test/**' ]
+  InvalidPackageDeclaration:
+    active: false
+  VariableNaming:
+    active: false
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: false
+  SwallowedException:
+    active: false
+
+style:
+  MagicNumber:
+    active: false
+  MaxLineLength:
+    active: true
+    maxLineLength: 130
+  FunctionOnlyReturningConstant:
+    active: true
+  ReturnCount:
+    active: false
