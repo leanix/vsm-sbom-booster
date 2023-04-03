@@ -7,6 +7,6 @@ ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
 RUN apk -U add curl ca-certificates && rm -f /var/cache/apk/*
 
-COPY build/libs/vsmSbomBooster-0.0.1-SNAPSHOT.jar app.jar
+COPY build/libs/*.jar app.jar
 
 ENTRYPOINT ["java", "-jar", "/app.jar"]
