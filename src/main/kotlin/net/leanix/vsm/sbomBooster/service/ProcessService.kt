@@ -31,14 +31,24 @@ class ProcessService(
         if (!username.isNullOrBlank()) {
             try {
                 downloadedFolder = ortService.downloadProject(projectUrl, username, githubToken)
+                logger.info("Finished downloading repository with url: $projectUrl to temp folder: $downloadedFolder")
+
                 ortService.analyzeProject(downloadedFolder)
+                logger.info("Finished analyzing repository with url: $projectUrl in temp folder $downloadedFolder")
+
                 ortService.generateSbom(downloadedFolder)
+                logger.info(
+                    "Finished generating SBOM file for repository with url: " +
+                        "$projectUrl in temp folder $downloadedFolder."
+                )
+
                 val accessToken = mtMService.getAccessToken(region, leanIxToken)
                 vsmDiscoveryService.sendToVsm(projectUrl, downloadedFolder, accessToken!!, region)
             } catch (e: Exception) {
                 logger.error(e.message)
             } finally {
                 ortService.deleteDownloadedFolder(downloadedFolder)
+                logger.info("Finished deleting temp folder $downloadedFolder.")
             }
         }
 

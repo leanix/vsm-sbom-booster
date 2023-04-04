@@ -7,7 +7,8 @@ docker build --platform linux/x86_64 -t vsm-sbom-booster .
 To run image locally:
 
 ```console
-docker run -v /var/run/docker.sock:/var/run/docker.sock \
+docker run --pull=always \
+           -v /var/run/docker.sock:/var/run/docker.sock \
            -v <temp-folder-to-be-used-for-storing-data>:/tempDir \
            -e MOUNTED_VOLUME='<temp-folder-to-be-used-for-storing-data>' \
            -e LEANIX_TOKEN='<leanix-technical-user-token>' \

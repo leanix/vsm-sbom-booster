@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import org.springframework.stereotype.Component
+import java.util.*
 import kotlin.system.exitProcess
 
 @Component
@@ -23,8 +24,13 @@ class ExitScheduler(
         val tasksCompleted = threadPoolTaskExecutor.threadPoolExecutor.completedTaskCount
         val pendingTasks = tasksSubmitted - tasksCompleted
 
-        logger.info("Tasks submitted: $tasksSubmitted, Tasks completed: $tasksCompleted, Tasks pending: $pendingTasks")
-
+        logger.info(
+            "Progress  ${String.format(
+                Locale.ENGLISH,
+                "%.2f", (tasksCompleted.toDouble() / tasksSubmitted.toDouble()) * 100
+            )} %" +
+                " - Tasks submitted: $tasksSubmitted, Tasks completed: $tasksCompleted, Tasks pending: $pendingTasks"
+        )
         if (pendingTasks == 0L) {
             logger.info("Submitted ${VsmSbomBoosterApplication.counter} services with SBOM file to VSM.")
             exitProcess(1)

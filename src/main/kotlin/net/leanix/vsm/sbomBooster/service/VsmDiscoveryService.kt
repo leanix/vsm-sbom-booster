@@ -50,7 +50,7 @@ class VsmDiscoveryService(
 
         val bom = parser.parse(sbomByteArray)
 
-        if (bom.components.isNotEmpty()) {
+        if (!bom.components.isNullOrEmpty()) {
             multipartBodyBuilder.part("bom", sbomFile, MediaType.APPLICATION_JSON)
 
             val multipartBody: MultiValueMap<String, HttpEntity<*>> = multipartBodyBuilder.build()
@@ -65,7 +65,7 @@ class VsmDiscoveryService(
             logger.info("Response received from VSM: $responseEntity")
             VsmSbomBoosterApplication.counter.getAndIncrement()
         } else {
-            logger.warn("No dependencies found in the SBOM file for repository $projectUrl")
+            logger.info("No components found in the SBOM file for repository $projectUrl")
         }
     }
 }
