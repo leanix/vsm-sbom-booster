@@ -1,8 +1,6 @@
 package net.leanix.vsm.sbomBooster.service
 
 import net.leanix.vsm.sbomBooster.configuration.PropertiesConfiguration
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.nio.file.Paths
 
@@ -11,7 +9,6 @@ class OrtService(
     private val propertiesConfiguration: PropertiesConfiguration
 ) {
     companion object {
-        private val logger: Logger = LoggerFactory.getLogger(OrtService::class.java)
         private val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
     }
     fun downloadProject(projectUrl: String, username: String, githubToken: String): String {
@@ -29,13 +26,11 @@ class OrtService(
             "-o", "/project/$downloadFolder"
         )
 
-        downloadProcessBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT)
         downloadProcessBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
         val downloadProcess = downloadProcessBuilder.start()
 
         downloadProcess.waitFor()
         downloadProcess.destroy()
-        logger.info("Finished downloading. Project downloaded to folder: $downloadFolder")
 
         return downloadFolder
     }
@@ -53,13 +48,11 @@ class OrtService(
             "-o", "/downloadedProject"
         )
 
-        analyzeProcessBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT)
         analyzeProcessBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
         val analyzeProcess = analyzeProcessBuilder.start()
 
         analyzeProcess.waitFor()
         analyzeProcess.destroy()
-        logger.info("Finished analyzing project in folder $downloadFolder")
     }
 
     fun generateSbom(downloadFolder: String) {
@@ -77,18 +70,15 @@ class OrtService(
             "-O", "CycloneDx=schema.version=1.4"
         )
 
-        generateSbomProcessBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT)
         generateSbomProcessBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
         val generateSbomProcess = generateSbomProcessBuilder.start()
 
         generateSbomProcess.waitFor()
         generateSbomProcess.destroy()
-        logger.info("Finished generating SBOM file for project in folder $downloadFolder.")
     }
 
     fun deleteDownloadedFolder(downloadFolder: String?) {
         val folder = Paths.get("tempDir", downloadFolder).toFile()
         folder.deleteRecursively()
-        logger.info("Finished deleting folder $downloadFolder.")
     }
 }
