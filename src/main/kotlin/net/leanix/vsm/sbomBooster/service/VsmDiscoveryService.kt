@@ -19,7 +19,8 @@ import java.nio.file.Paths
 
 @Service
 class VsmDiscoveryService(
-    private val propertiesConfiguration: PropertiesConfiguration
+    private val propertiesConfiguration: PropertiesConfiguration,
+    private val summaryReportService: SummaryReportService
 ) {
 
     companion object {
@@ -64,8 +65,10 @@ class VsmDiscoveryService(
 
             logger.info("Response received from VSM: $responseEntity")
             VsmSbomBoosterApplication.counter.getAndIncrement()
+            summaryReportService.appendRecord("Successfully processed repository with url: $projectUrl \n")
         } else {
             logger.info("No components found in the SBOM file for repository $projectUrl")
+            summaryReportService.appendRecord("Failed to process repository with url: $projectUrl \n")
         }
     }
 }
