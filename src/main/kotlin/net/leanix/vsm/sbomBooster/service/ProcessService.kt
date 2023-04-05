@@ -52,10 +52,13 @@ class ProcessService(
             }
         }
 
-        val endInstant = Instant.now()
+        val duration = (
+            Instant.now().toEpochMilli() -
+                startInstant.toEpochMilli()
+            ).toDuration(DurationUnit.MILLISECONDS)
+
         logger.info(
-            "Processed repository with url: $projectUrl in " +
-                "${(endInstant.toEpochMilli() - startInstant.toEpochMilli()).toDuration(DurationUnit.MILLISECONDS)}"
+            "Processed repository with url: $projectUrl in $duration"
         )
     }
 }
