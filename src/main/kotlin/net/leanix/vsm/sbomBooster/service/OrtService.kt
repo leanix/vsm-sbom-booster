@@ -53,7 +53,7 @@ class OrtService(
         val analyzeProcess = analyzeProcessBuilder.start()
 
         analyzeProcess.waitFor(30, TimeUnit.MINUTES)
-        analyzeProcess.destroy()
+        analyzeProcess.destroyForcibly()
     }
 
     fun generateSbom(downloadFolder: String) {
