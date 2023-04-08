@@ -30,7 +30,7 @@ class OrtService(
         downloadProcessBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
         val downloadProcess = downloadProcessBuilder.start()
 
-        downloadProcess.waitFor()
+        downloadProcess.waitFor(15, TimeUnit.MINUTES)
         downloadProcess.destroy()
 
         return downloadFolder
@@ -53,7 +53,7 @@ class OrtService(
         val analyzeProcess = analyzeProcessBuilder.start()
 
         analyzeProcess.waitFor(30, TimeUnit.MINUTES)
-        analyzeProcess.destroyForcibly()
+        analyzeProcess.destroy()
     }
 
     fun generateSbom(downloadFolder: String) {
@@ -74,7 +74,7 @@ class OrtService(
         generateSbomProcessBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
         val generateSbomProcess = generateSbomProcessBuilder.start()
 
-        generateSbomProcess.waitFor()
+        generateSbomProcess.waitFor(10, TimeUnit.MINUTES)
         generateSbomProcess.destroy()
     }
 
