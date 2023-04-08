@@ -3,6 +3,7 @@ package net.leanix.vsm.sbomBooster.service
 import net.leanix.vsm.sbomBooster.configuration.PropertiesConfiguration
 import org.springframework.stereotype.Service
 import java.nio.file.Paths
+import java.util.concurrent.TimeUnit
 
 @Service
 class OrtService(
@@ -51,7 +52,7 @@ class OrtService(
         analyzeProcessBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
         val analyzeProcess = analyzeProcessBuilder.start()
 
-        analyzeProcess.waitFor()
+        analyzeProcess.waitFor(30, TimeUnit.MINUTES)
         analyzeProcess.destroy()
     }
 

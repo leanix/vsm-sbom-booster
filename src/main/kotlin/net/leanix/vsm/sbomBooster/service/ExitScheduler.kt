@@ -34,9 +34,7 @@ class ExitScheduler(
                 "Success rate: ${String.format(
                     Locale.ENGLISH,
                     "%.2f",
-                    (
-                        VsmSbomBoosterApplication.counter.get().toDouble() / tasksCompleted.toDouble()
-                        ) * 100
+                    getPercentage(VsmSbomBoosterApplication.counter.get().toDouble(), tasksCompleted.toDouble())
                 )} % " +
                 " - Tasks submitted: $tasksSubmitted, Tasks completed: $tasksCompleted," +
                 " Tasks pending: $pendingTasks, Tasks active: $tasksActive"
@@ -53,12 +51,15 @@ class ExitScheduler(
                 "\nTotal success rate was ${String.format(
                     Locale.ENGLISH,
                     "%.2f",
-                    (
-                        VsmSbomBoosterApplication.counter.get().toDouble() / tasksSubmitted.toDouble()
-                        ) * 100
+                    getPercentage(VsmSbomBoosterApplication.counter.get().toDouble(), tasksSubmitted.toDouble())
                 )} %."
             )
             exitProcess(1)
         }
+    }
+
+    private fun getPercentage(numerator: Double, denominator: Double): Double {
+        if (denominator == 0.0) return denominator
+        return (numerator / denominator) * 100
     }
 }
