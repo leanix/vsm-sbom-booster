@@ -25,6 +25,7 @@ class VsmDiscoveryService(
 
     companion object {
         private val logger: Logger = LoggerFactory.getLogger(VsmDiscoveryService::class.java)
+        const val SOURCE_CUSTOM_HEADER = "X-Lx-Vsm-Discovery-Source"
     }
 
     fun sendToVsm(projectUrl: String, downloadedFolder: String, leanIxToken: String, region: String) {
@@ -32,6 +33,7 @@ class VsmDiscoveryService(
         val headers = HttpHeaders()
         headers.contentType = MediaType.MULTIPART_FORM_DATA
         headers.set("Authorization", "Bearer $leanIxToken")
+        headers.set(SOURCE_CUSTOM_HEADER, "VSMSbomBooster")
 
         val multipartBodyBuilder = MultipartBodyBuilder()
 

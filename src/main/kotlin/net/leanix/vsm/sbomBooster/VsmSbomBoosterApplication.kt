@@ -31,7 +31,7 @@ class VsmSbomBoosterApplication(
 
         summaryReportService.appendRecord("Started VSM SBOM Booster at: ${LocalDateTime.now()}\n")
         summaryReportService.appendRecord(
-            "VSM SBOM Booster ran with the following parameters " +
+            "VSM SBOM Booster started with the following parameters " +
                 "(secrets are omitted): \n"
         )
         summaryReportService.appendRecord("MOUNTED_VOLUME: ${propertiesConfiguration.mountedVolume}\n")
@@ -60,8 +60,6 @@ class VsmSbomBoosterApplication(
                 propertiesConfiguration.region
             )
         }
-
-        summaryReportService.appendRecord("\nFinished VSM SBOM Booster at ${LocalDateTime.now()} \n")
     }
 }
 

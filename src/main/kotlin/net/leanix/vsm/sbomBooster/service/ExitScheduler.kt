@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import org.springframework.stereotype.Component
+import java.time.LocalDateTime
 import java.util.*
 import kotlin.system.exitProcess
 
@@ -54,6 +55,8 @@ class ExitScheduler(
                     getPercentage(VsmSbomBoosterApplication.counter.get().toDouble(), tasksSubmitted.toDouble())
                 )} %."
             )
+
+            summaryReportService.appendRecord("\nFinished VSM SBOM Booster at ${LocalDateTime.now()} \n")
             exitProcess(1)
         }
     }
