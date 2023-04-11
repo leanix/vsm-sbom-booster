@@ -48,7 +48,7 @@ The second `-v` param is the path to temporary folder that the `vsm-sbom-booster
 
 `SOURCE_INSTANCE`(optional): individual instance within the source system e.g. prod or org entity within the source system. This is used in the mapping inbox to understand where discovered data originated from. Default: `{GITHUB_ORGANIZATION}`
 
-`CONCURRENCY_FACTOR`(optional): `vsm-sbom-booster` will generate SBOMs for. Default: 3. Note: increasing this number will come at higher compute costs. Default: 3
+`CONCURRENCY_FACTOR`(optional): the number of parallel threads `vsm-sbom-booster` will use to generate SBOMs. Note: increasing this number will come at higher compute costs. Default: 3
 
 
 
