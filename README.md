@@ -30,7 +30,7 @@ docker run --pull=always \
 
 The first `-v` param is needed as the setup is a docker-in-docker setup and will need to mount the local docker runtime into the container. Under normal circumstances this param can be copied and pasted.
 
-The second `-v` param is the path to temporary folder that the `vsm-sbom-booster`will use to temporarily clone the projects to attempt to generate the SBOM. e.g. `~/output/temp`
+The second `-v` param is the path to temporary folder that the `vsm-sbom-booster`will use to temporarily clone the projects to attempt to generate the SBOM. e.g. `~/output/temp`. Docker should have Read/Write access on this folder.
 
 `MOUNTED_VOLUME`: this is the same as the second `-v` param. It's required as the container needs an explicit env variable to do its job.
 
@@ -48,7 +48,7 @@ The second `-v` param is the path to temporary folder that the `vsm-sbom-booster
 
 `SOURCE_INSTANCE`(optional): individual instance within the source system e.g. prod or org entity within the source system. This is used in the mapping inbox to understand where discovered data originated from. Default: `{GITHUB_ORGANIZATION}`
 
-`CONCURRENCY_FACTOR`(optional): the number of parallel threads `vsm-sbom-booster` will use to generate SBOMs. Note: increasing this number will come at higher compute costs. Default: 3
+`CONCURRENCY_FACTOR`(optional): the number of parallel jobs `vsm-sbom-booster` will use to generate SBOMs. Note: increasing this number will come at higher compute costs. Default: 3
 
 
 
@@ -64,17 +64,15 @@ Today, the prototype only supports to scan GitHub Cloud and GitHub Enterprise. W
 
 We also encourage contributions to extend this prototype to be able to run when package manager files changes, to bring it closer the real build. 
 
-We recommend to deploy it as TODO: @geoandri pls add your / our recommendation here 
-
 ### Supported Package Managers
 
 For a full list, please refer to the [ORT documentation](https://github.com/oss-review-toolkit/ort#details-on-the-tools).
 
 ### Logging
-The `vsm-sbom-booster` will per default have verbose logs to understand the inner-workings, as well as any errors. It will also create a summary json report in the mounted volume on your host machine. The report is called `summary.txt`. It details for which repository a SBOM was generated and for which it failed. 
+The `vsm-sbom-booster` will per default have verbose logs to understand the inner-workings, as well as any errors. It will also create a summary report in the mounted volume on your host machine. The summary report file name is `summaryReport_<timestamp>.txt`. It contains details for which repository an SBOM file was generated and for which it failed. There are cases where `vsm-sbom-booster` will have to forcefully shutdown stale jobs after a specific amount of time. Keep in mind that those repositories will not be present in the summary report file.
 
 ## A word on support
-This project is a experimental prototype. Regular LeanIX service SLA and support do not apply to this project. We also maintain this prototype sporadically.
+This project is an experimental prototype. Regular LeanIX service SLA and support do not apply to this project. We also maintain this prototype sporadically.
 
 Yet, we are open to discuss the work and are of course open to any contributions by the community 💙
 
