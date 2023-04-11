@@ -33,7 +33,7 @@ class VsmDiscoveryService(
         val headers = HttpHeaders()
         headers.contentType = MediaType.MULTIPART_FORM_DATA
         headers.set("Authorization", "Bearer $leanIxToken")
-        headers.set(SOURCE_CUSTOM_HEADER, "VSMSbomBooster")
+        headers.set(SOURCE_CUSTOM_HEADER, "vsm-sbom-booster")
 
         val multipartBodyBuilder = MultipartBodyBuilder()
 
