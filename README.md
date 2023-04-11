@@ -66,9 +66,11 @@ We also encourage contributions to extend this prototype to be able to run when 
 
 We recommend to deploy it as TODO: @geoandri pls add your / our recommendation here 
 
+### Supported Package Managers
+
 For a full list, please refer to the [ORT documentation](https://github.com/oss-review-toolkit/ort#details-on-the-tools).
 
-## Logging
+### Logging
 The `vsm-sbom-booster` will per default have verbose logs to understand the inner-workings, as well as any errors. It will also create a summary json report in the mounted volume on your host machine. The report is called `summary.txt`. It details for which repository a SBOM was generated and for which it failed. 
 
 ## A word on support
