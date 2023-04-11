@@ -29,6 +29,10 @@ class VsmSbomBoosterApplication(
     override fun run(vararg args: String?) {
         logger.info("Starting SBOM extraction application.")
 
+        if (propertiesConfiguration.sourceInstance == "") {
+            propertiesConfiguration.sourceInstance = propertiesConfiguration.githubOrganization
+        }
+
         summaryReportService.appendRecord("Started VSM SBOM Booster at: ${LocalDateTime.now()}\n")
         summaryReportService.appendRecord(
             "VSM SBOM Booster started with the following parameters " +
@@ -40,7 +44,7 @@ class VsmSbomBoosterApplication(
                 "${propertiesConfiguration.githubGraphqlApiUrl}\n"
         )
         summaryReportService.appendRecord("GITHUB_ORGANIZATION: ${propertiesConfiguration.githubOrganization}\n")
-        summaryReportService.appendRecord("REGION: ${propertiesConfiguration.region}\n")
+        summaryReportService.appendRecord("REGION: ${propertiesConfiguration.host}\n")
         summaryReportService.appendRecord("SOURCE_TYPE: ${propertiesConfiguration.sourceType}\n")
         summaryReportService.appendRecord("SOURCE_INSTANCE: ${propertiesConfiguration.sourceInstance}\n")
         summaryReportService.appendRecord("CONCURRENCY_FACTOR: ${propertiesConfiguration.concurrencyFactor}\n\n")
@@ -57,7 +61,7 @@ class VsmSbomBoosterApplication(
                 it,
                 propertiesConfiguration.githubToken,
                 propertiesConfiguration.leanIxToken,
-                propertiesConfiguration.region
+                propertiesConfiguration.host
             )
         }
     }

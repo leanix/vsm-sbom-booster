@@ -2,10 +2,10 @@ leanix:
   vsm:
     mounted-volume: ${MOUNTED_VOLUME:}
     leanIx-token: ${LEANIX_TOKEN:}
-    github-graphql-api-url: ${GITHUB_GRAPHQL_API_URL:}
+    github-graphql-api-url: ${GITHUB_GRAPHQL_API_URL:https://api.github.com/graphql}
     github-token: ${GITHUB_TOKEN:}
     github-organization: ${GITHUB_ORGANIZATION:}
-    region: ${REGION:}
-    concurrency-factor: ${CONCURRENCY_FACTOR:1}
-    source-type: ${SOURCE_TYPE:}
+    host: ${HOST:}
+    concurrency-factor: ${CONCURRENCY_FACTOR:3}
+    source-type: ${SOURCE_TYPE:vsm-sbom-booster}
     source-instance: ${SOURCE_INSTANCE:}
