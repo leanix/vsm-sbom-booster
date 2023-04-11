@@ -26,9 +26,11 @@ docker run --pull=always \
 ```
 2. After a while your mapping inbox should be receiving new discovery items. These will need to be mapped by you once (see our [user documentation](https://docs-vsm.leanix.net/docs/discover-automate#create-your-service-baseline)).
 
+### Environment Variables
+
 The first `-v` param is needed as the setup is a docker-in-docker setup and will need to mount the local docker runtime into the container. Under normal circumstances this param can be copied and pasted.
 
-The second `-v`param is the path to temporary folder that the `vsm-sbom-booster`will use to temporarily clone the projects to attempt to generate the SBOM. e.g. `~/output/temp`
+The second `-v` param is the path to temporary folder that the `vsm-sbom-booster`will use to temporarily clone the projects to attempt to generate the SBOM. e.g. `~/output/temp`
 
 `MOUNTED_VOLUME`: this is the same as the second `-v` param. It's required as the container needs an explicit env variable to do its job.
 
