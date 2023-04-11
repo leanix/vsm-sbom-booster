@@ -1,6 +1,7 @@
 package net.leanix.vsm.sbomBooster.configuration
 
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.validation.annotation.Validated
 
@@ -18,10 +19,10 @@ data class PropertiesConfiguration(
     @field:NotBlank
     val githubOrganization: String,
     @field:NotBlank
-    val region: String,
+    val host: String,
+    @field:NotNull
     val concurrencyFactor: Int,
     @field:NotBlank
     val sourceType: String,
-    @field:NotBlank
-    val sourceInstance: String
+    var sourceInstance: String
 )
