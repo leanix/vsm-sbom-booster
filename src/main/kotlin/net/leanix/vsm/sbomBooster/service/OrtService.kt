@@ -17,11 +17,11 @@ class OrtService(
 
         val downloadProcessBuilder = ProcessBuilder(
             "docker",
-            "run", "--rm",
+            "run", "--pull=always", "--rm",
             "-e", "ORT_HTTP_USERNAME=$username",
             "-e", "ORT_HTTP_PASSWORD=$githubToken",
             "-v", "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}:/project",
-            "ort",
+            "leanixacrpublic.azurecr.io/ort",
             "download",
             "--project-url", "$projectUrl",
             "-o", "/project/$downloadFolder"
@@ -38,11 +38,11 @@ class OrtService(
 
     fun analyzeProject(downloadFolder: String) {
         val analyzeProcessBuilder = ProcessBuilder(
-            "docker", "run", "--rm",
+            "docker", "run", "--pull=always", "--rm",
             "-v",
             "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}" +
                 "/$downloadFolder:/downloadedProject",
-            "ort",
+            "leanixacrpublic.azurecr.io/ort",
             "-P", "ort.analyzer.allowDynamicVersions=true",
             "analyze",
             "-i", "/downloadedProject",
@@ -58,11 +58,11 @@ class OrtService(
 
     fun generateSbom(downloadFolder: String) {
         val generateSbomProcessBuilder = ProcessBuilder(
-            "docker", "run", "--rm",
+            "docker", "run", "--pull=always", "--rm",
             "-v",
             "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}" +
                 "/$downloadFolder:/downloadedProject",
-            "ort",
+            "leanixacrpublic.azurecr.io/ort",
             "report",
             "-f", "CycloneDX",
             "-i", "/downloadedProject/analyzer-result.yml",
