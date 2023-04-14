@@ -19,6 +19,8 @@ data class PropertiesConfiguration(
     @field:NotBlank
     val githubOrganization: String,
     @field:NotBlank
+    val region: String,
+    @field:NotBlank
     val host: String,
     @field:NotNull
     val concurrencyFactor: Int,

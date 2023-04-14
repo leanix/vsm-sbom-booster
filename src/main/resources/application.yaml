@@ -6,6 +6,7 @@ leanix:
     github-token: ${GITHUB_TOKEN:}
     github-organization: ${GITHUB_ORGANIZATION:}
     host: ${HOST:}
+    region: ${REGION:}
     concurrency-factor: ${CONCURRENCY_FACTOR:3}
     source-type: ${SOURCE_TYPE:vsm-sbom-booster}
     source-instance: ${SOURCE_INSTANCE:}

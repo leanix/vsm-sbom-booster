@@ -57,11 +57,9 @@ class VsmSbomBoosterApplication(
 
         repositories.forEach {
             processService.processRepository(
+                propertiesConfiguration,
                 username,
-                it,
-                propertiesConfiguration.githubToken,
-                propertiesConfiguration.leanIxToken,
-                propertiesConfiguration.host
+                it
             )
         }
     }

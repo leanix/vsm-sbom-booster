@@ -1,5 +1,6 @@
 package net.leanix.vsm.sbomBooster.service
 
+import net.leanix.vsm.sbomBooster.configuration.PropertiesConfiguration
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async
@@ -20,19 +21,19 @@ class ProcessService(
 
     @Async
     fun processRepository(
+        propertiesConfiguration: PropertiesConfiguration,
         username: String?,
-        projectUrl: String,
-        githubToken: String,
-        leanIxToken: String,
-        region: String
+        projectUrl: String
     ) {
         val startInstant = Instant.now()
         var downloadedFolder: String? = null
         if (!username.isNullOrBlank()) {
             try {
-                downloadedFolder = ortService.downloadProject(projectUrl, username, githubToken)
+                logger.info("Beginning to download repository with url: $projectUrl")
+                downloadedFolder = ortService.downloadProject(projectUrl, username, propertiesConfiguration.githubToken)
                 logger.info("Finished downloading repository with url: $projectUrl to temp folder: $downloadedFolder")
 
+                logger.info("Beginning to analyze repository with url: $projectUrl")
                 ortService.analyzeProject(downloadedFolder)
                 logger.info("Finished analyzing repository with url: $projectUrl in temp folder $downloadedFolder")
 
@@ -42,8 +43,14 @@ class ProcessService(
                         "$projectUrl in temp folder $downloadedFolder."
                 )
 
-                val accessToken = mtMService.getAccessToken(region, leanIxToken)
-                vsmDiscoveryService.sendToVsm(projectUrl, downloadedFolder, accessToken!!, region)
+                val accessToken = mtMService.getAccessToken(
+                    propertiesConfiguration.host,
+                    propertiesConfiguration.leanIxToken
+                )
+                vsmDiscoveryService.sendToVsm(
+                    projectUrl, downloadedFolder, accessToken!!,
+                    propertiesConfiguration.region
+                )
             } catch (e: Exception) {
                 logger.error(e.message)
             } finally {
