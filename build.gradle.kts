@@ -60,18 +60,6 @@ val graphqlGenerateGithubClient by tasks.creating(GraphQLGenerateClientTask::cla
 	)
 }
 
-//task graphqlGenerateClient {
-//	schemaFile = file("${project.projectDir}/src/main/resources/schemas/gitlab_schema.graphql")
-//	packageName ="net.leanix.vsm.sbomBooster.gitlab.graphql.generated"
-//	queryFiles.from("${project.projectDir}/src/main/resources/queries/Gitlab")
-//}
-
-//val graphqlGenerateGithubClient by tasks.getting(GraphQLGenerateClientTask::class) {
-//	schemaFile.set(file("${project.projectDir}/src/main/resources/schemas/github_schema.graphql"))
-//	packageName.set("net.leanix.vsm.sbomBooster.github.graphql.generated")
-//	queryFiles.from("${project.projectDir}/src/main/resources/queries/Github")
-//}
-
 detekt {
 	autoCorrect = true
 	parallel = true
