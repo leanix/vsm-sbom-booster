@@ -20,7 +20,7 @@ class ExitScheduler(
         private val logger: Logger = LoggerFactory.getLogger(ExitScheduler::class.java)
     }
 
-    @Scheduled(fixedRate = 15000, initialDelay = 30000)
+    @Scheduled(fixedRate = 100000, initialDelay = 300000)
     fun checkPendingTasks() {
         val tasksSubmitted = threadPoolTaskExecutor.threadPoolExecutor.taskCount
         val tasksCompleted = threadPoolTaskExecutor.threadPoolExecutor.completedTaskCount

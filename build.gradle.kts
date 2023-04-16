@@ -1,3 +1,4 @@
+import com.expediagroup.graphql.plugin.gradle.tasks.GraphQLGenerateClientTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -41,13 +42,35 @@ tasks.withType<Test> {
 	useJUnitPlatform()
 }
 
-graphql {
-	client {
-		schemaFile = file("${project.projectDir}/src/main/resources/schemas/github_schema.graphql")
-		packageName = "net.leanix.vsm.sbomBooster.graphql.generated"
-		queryFileDirectory = "${project.projectDir}/src/main/resources/queries"
-	}
+val graphqlGenerateGitlabClient by tasks.creating(GraphQLGenerateClientTask::class) {
+	packageName.set("net.leanix.vsm.sbomBooster.graphql.generated.gitlab")
+	schemaFile.set(file("${project.projectDir}/src/main/resources/schemas/gitlab_schema.graphql"))
+	queryFiles.from(
+		"${project.projectDir}/src/main/resources/queries/Gitlab/GetUsername.graphql",
+		"${project.projectDir}/src/main/resources/queries/Gitlab/GetRepositoriesPaginated.graphql"
+	)
 }
+
+val graphqlGenerateGithubClient by tasks.creating(GraphQLGenerateClientTask::class) {
+	packageName.set("net.leanix.vsm.sbomBooster.graphql.generated.github")
+	schemaFile.set(file("${project.projectDir}/src/main/resources/schemas/github_schema.graphql"))
+	queryFiles.from(
+		"${project.projectDir}/src/main/resources/queries/Github/GetUsername.graphql",
+		"${project.projectDir}/src/main/resources/queries/Github/GetRepositoriesPaginated.graphql"
+	)
+}
+
+//task graphqlGenerateClient {
+//	schemaFile = file("${project.projectDir}/src/main/resources/schemas/gitlab_schema.graphql")
+//	packageName ="net.leanix.vsm.sbomBooster.gitlab.graphql.generated"
+//	queryFiles.from("${project.projectDir}/src/main/resources/queries/Gitlab")
+//}
+
+//val graphqlGenerateGithubClient by tasks.getting(GraphQLGenerateClientTask::class) {
+//	schemaFile.set(file("${project.projectDir}/src/main/resources/schemas/github_schema.graphql"))
+//	packageName.set("net.leanix.vsm.sbomBooster.github.graphql.generated")
+//	queryFiles.from("${project.projectDir}/src/main/resources/queries/Github")
+//}
 
 detekt {
 	autoCorrect = true

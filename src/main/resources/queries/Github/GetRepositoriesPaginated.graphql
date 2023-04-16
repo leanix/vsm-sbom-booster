@@ -6,6 +6,7 @@ query GetRepositoriesPaginated($login: String!, $first: Int!, $after: String){
                     cursor
                     node {
                         url
+                        name
                     }
                 }
             }

@@ -1,7 +1,9 @@
 package net.leanix.vsm.sbomBooster
 
 import net.leanix.vsm.sbomBooster.configuration.PropertiesConfiguration
+import net.leanix.vsm.sbomBooster.domain.Repository
 import net.leanix.vsm.sbomBooster.service.GitHubApiService
+import net.leanix.vsm.sbomBooster.service.GitLabApiService
 import net.leanix.vsm.sbomBooster.service.ProcessService
 import net.leanix.vsm.sbomBooster.service.SummaryReportService
 import org.slf4j.Logger
@@ -17,6 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger
 @EnableConfigurationProperties(PropertiesConfiguration::class)
 class VsmSbomBoosterApplication(
     private val gitHubApiService: GitHubApiService,
+    private val gitLabApiService: GitLabApiService,
     private val processService: ProcessService,
     private val propertiesConfiguration: PropertiesConfiguration,
     private val summaryReportService: SummaryReportService
@@ -29,41 +32,75 @@ class VsmSbomBoosterApplication(
     override fun run(vararg args: String?) {
         logger.info("Starting SBOM extraction application.")
 
-        if (propertiesConfiguration.sourceInstance == "") {
-            propertiesConfiguration.sourceInstance = propertiesConfiguration.githubOrganization
-        }
-
         summaryReportService.appendRecord("Started VSM SBOM Booster at: ${LocalDateTime.now()}\n")
         summaryReportService.appendRecord(
             "VSM SBOM Booster started with the following parameters " +
                 "(secrets are omitted): \n"
         )
         summaryReportService.appendRecord("MOUNTED_VOLUME: ${propertiesConfiguration.mountedVolume}\n")
-        summaryReportService.appendRecord(
-            "GITHUB_GRAPHQL_API_URL: " +
-                "${propertiesConfiguration.githubGraphqlApiUrl}\n"
-        )
-        summaryReportService.appendRecord("GITHUB_ORGANIZATION: ${propertiesConfiguration.githubOrganization}\n")
-        summaryReportService.appendRecord("REGION: ${propertiesConfiguration.host}\n")
-        summaryReportService.appendRecord("SOURCE_TYPE: ${propertiesConfiguration.sourceType}\n")
-        summaryReportService.appendRecord("SOURCE_INSTANCE: ${propertiesConfiguration.sourceInstance}\n")
         summaryReportService.appendRecord("CONCURRENCY_FACTOR: ${propertiesConfiguration.concurrencyFactor}\n\n")
 
-        val username = gitHubApiService.getUsername(propertiesConfiguration.githubToken)
-        val repositories = gitHubApiService.getRepositories(
-            propertiesConfiguration.githubToken, propertiesConfiguration.githubOrganization
-        )
+        summaryReportService.appendRecord("LEANIX_REGION: ${propertiesConfiguration.leanIxRegion}\n")
+        summaryReportService.appendRecord("LEANIX_HOST: ${propertiesConfiguration.leanIxHost}\n")
+
+        summaryReportService.appendRecord("SOURCE_TYPE: ${propertiesConfiguration.sourceType}\n")
+        summaryReportService.appendRecord("SOURCE_INSTANCE: ${propertiesConfiguration.sourceInstance}\n")
+
+        summaryReportService.appendRecord("GIT_PROVIDER: ${propertiesConfiguration.gitProvider.uppercase()}\n")
+
+        val (username, repositories) = getRepositories()
+
         logger.info("Discovered ${repositories.size} repositories to process.")
 
         repositories.forEach {
             processService.processRepository(
+                propertiesConfiguration,
                 username,
-                it,
-                propertiesConfiguration.githubToken,
-                propertiesConfiguration.leanIxToken,
-                propertiesConfiguration.host
+                it
             )
         }
+    }
+
+    fun getRepositories(): Pair<String?, List<Repository>> {
+        val repositories: List<Repository>
+        val username: String?
+        when (propertiesConfiguration.gitProvider.uppercase()) {
+            "GITHUB" -> {
+                summaryReportService.appendRecord(
+                    "GITHUB_GRAPHQL_API_URL: " +
+                        "${propertiesConfiguration.githubGraphqlApiUrl}\n"
+                )
+                summaryReportService.appendRecord(
+                    "GITHUB_ORGANIZATION: ${propertiesConfiguration.githubOrganization}\n"
+                )
+
+                username = gitHubApiService.getUsername(propertiesConfiguration.githubToken)
+                repositories = gitHubApiService.getRepositories(
+                    propertiesConfiguration.githubToken, propertiesConfiguration.githubOrganization
+                )
+            }
+            "GITLAB" -> {
+                summaryReportService.appendRecord(
+                    "GITLAB_GRAPHQL_API_URL: " +
+                        "${propertiesConfiguration.gitlabGraphqlApiUrl}\n"
+                )
+                summaryReportService.appendRecord("GITLAB_GROUP: ${propertiesConfiguration.gitlabGroup}\n")
+
+                username = gitLabApiService.getUsername(propertiesConfiguration.gitlabToken)
+                repositories = gitLabApiService.getRepositories(
+                    propertiesConfiguration.gitlabToken, propertiesConfiguration.gitlabGroup
+                )
+            }
+            else -> {
+                summaryReportService.appendRecord(
+                    "WARNING: INVALID GIT_PROVIDER: ${propertiesConfiguration.gitProvider.uppercase()}\n"
+                )
+                throw IllegalArgumentException(
+                    "Invalid GIT_PROVIDER: ${propertiesConfiguration.gitProvider.uppercase()}"
+                )
+            }
+        }
+        return Pair(username, repositories)
     }
 }
 

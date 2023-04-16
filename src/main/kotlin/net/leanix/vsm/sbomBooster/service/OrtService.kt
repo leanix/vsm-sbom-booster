@@ -12,18 +12,33 @@ class OrtService(
     companion object {
         private val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
     }
-    fun downloadProject(projectUrl: String, username: String, githubToken: String): String {
+
+    fun pullOrt() {
+        val pullOrtProcessBuilder = ProcessBuilder(
+            "docker",
+            "pull",
+            "leanixacrpublic.azurecr.io/ort"
+        )
+
+        pullOrtProcessBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
+        val downloadProcess = pullOrtProcessBuilder.start()
+
+        downloadProcess.waitFor(15, TimeUnit.MINUTES)
+        downloadProcess.destroy()
+    }
+
+    fun downloadProject(projectUrl: String, username: String, gitToken: String): String {
         val downloadFolder = "downloaded_${List(10) { charPool.random() }.joinToString("")}"
 
         val downloadProcessBuilder = ProcessBuilder(
             "docker",
-            "run", "--pull=always", "--rm",
+            "run", "--rm",
             "-e", "ORT_HTTP_USERNAME=$username",
-            "-e", "ORT_HTTP_PASSWORD=$githubToken",
+            "-e", "ORT_HTTP_PASSWORD=$gitToken",
             "-v", "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}:/project",
             "leanixacrpublic.azurecr.io/ort",
             "download",
-            "--project-url", "$projectUrl",
+            "--project-url", projectUrl,
             "-o", "/project/$downloadFolder"
         )
 
@@ -38,7 +53,7 @@ class OrtService(
 
     fun analyzeProject(downloadFolder: String) {
         val analyzeProcessBuilder = ProcessBuilder(
-            "docker", "run", "--pull=always", "--rm",
+            "docker", "run", "--rm",
             "-v",
             "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}" +
                 "/$downloadFolder:/downloadedProject",
@@ -58,7 +73,7 @@ class OrtService(
 
     fun generateSbom(downloadFolder: String) {
         val generateSbomProcessBuilder = ProcessBuilder(
-            "docker", "run", "--pull=always", "--rm",
+            "docker", "run", "--rm",
             "-v",
             "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}" +
                 "/$downloadFolder:/downloadedProject",

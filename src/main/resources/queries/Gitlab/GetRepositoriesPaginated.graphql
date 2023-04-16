@@ -1,0 +1,15 @@
+query GetRepositoriesPaginated($groupName: ID!, $first: Int, $after: String) {
+    group(fullPath: $groupName) {
+        projects(includeSubgroups: true, first: $first, after: $after) {
+            pageInfo {
+                hasNextPage
+                endCursor
+            }
+            nodes {
+                httpUrlToRepo
+                fullPath
+                name
+            }
+        }
+    }
+}

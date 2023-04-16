@@ -13,11 +13,11 @@ import java.util.*
 @Service
 class MtMService {
 
-    fun getAccessToken(region: String, lxToken: String): String? {
+    fun getAccessToken(host: String, lxToken: String): String? {
         val restTemplate = RestTemplate()
         val headers = HttpHeaders()
 
-        val auth: String = "apitoken:$lxToken"
+        val auth = "apitoken:$lxToken"
         val encodedAuth = Base64.getEncoder().encodeToString(auth.toByteArray())
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
         headers.set("Authorization", "Basic $encodedAuth")
@@ -28,7 +28,7 @@ class MtMService {
         val httpEntity: HttpEntity<*> = HttpEntity<MultiValueMap<String, String>>(requestBody, headers)
 
         val responseEntity = restTemplate.postForEntity(
-            "https://$region.leanix.net/services/mtm/v1/oauth2/token ", httpEntity,
+            "https://$host.leanix.net/services/mtm/v1/oauth2/token ", httpEntity,
             MtMResponse::class.java
         )
 
