@@ -16,11 +16,10 @@ data class PropertiesConfiguration(
 
     // LeanIX configs
     @field:NotBlank
-    val leanIxHost: String,
+    val leanIxToken: String,
     @field:NotBlank
     val leanIxRegion: String,
-    @field:NotBlank
-    val leanIxToken: String,
+    var leanIxHost: String,
 
     // Discovery API data
     @field:NotBlank

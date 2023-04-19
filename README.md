@@ -39,8 +39,8 @@ docker run --pull=always --rm \
            -e LEANIX_REGION='<leanix-workspace-region>' \
            -e LEANIX_TOKEN='<leanix-technical-user-token>' \
            -e GIT_PROVIDER='GITLAB' \
-           -e GITLAB_TOKEN='<github-token>' \
-           -e GITLAB_GROUP='<github-organization>' \
+           -e GITLAB_TOKEN='<gitlab-token>' \
+           -e GITLAB_GROUP='<gitlab-group>' \
            leanixacrpublic.azurecr.io/vsm-sbom-booster
 ```
 
@@ -59,13 +59,13 @@ The second `-v` param is the path to temporary folder that the `vsm-sbom-booster
 
 #### LeanIX configs
 
-`LEANIX_HOST`: The host name of your LeanIX workspace. e.g. For `https://acme.leanix.net` you would provide `acme`
+`LEANIX_TOKEN`: API token with **ADMIN** rights from your VSM workspace. (see admin > technical users).
 
 `LEANIX_REGION`: The region that your VSM workspace is hosted in. One of: eu|de|us|au|ca|ch
 
-`LEANIX_TOKEN`: API token with **ADMIN** rights from your VSM workspace. (see admin > technical users).
+`LEANIX_HOST` (optional): The host name of your LeanIX workspace. The region should work for most every case, so omitting this value will make it default to the REGION instead. e.g. For `https://acme.leanix.net` you would provide `acme`
 
-#### Discovery API data
+#### [Discovery API data](https://docs-vsm.leanix.net/reference/discovery_service)
 
 `SOURCE_TYPE` (optional): this will the source system from where you're scanning. This is used in the mapping inbox to understand where discovered data originated from. Default: `vsm-sbom-booster`
 
