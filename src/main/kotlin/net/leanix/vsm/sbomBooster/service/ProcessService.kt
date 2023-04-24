@@ -1,9 +1,8 @@
 package net.leanix.vsm.sbomBooster.service
 
-import kotlinx.coroutines.runBlocking
 import net.leanix.vsm.sbomBooster.configuration.PropertiesConfiguration
 import net.leanix.vsm.sbomBooster.domain.Repository
-import net.leanix.vsm.sbomBooster.domain.VSMDiscoveryItem
+import net.leanix.vsm.sbomBooster.domain.VsmDiscoveryItem
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async
@@ -24,11 +23,11 @@ class ProcessService(
     }
 
     fun initOrt() {
-        runBlocking {
-            if (!initStatus) {
-                ortService.pullOrt()
-                initStatus = true
-            }
+        if (!initStatus) {
+            logger.info("Pulling the latest version of ORT...")
+            ortService.pullOrt()
+            initStatus = true
+            logger.info("Pulled the latest version of ORT!")
         }
     }
 
@@ -73,7 +72,7 @@ class ProcessService(
                 vsmDiscoveryService.sendToVsm(
                     accessToken!!,
                     propertiesConfiguration.leanIxRegion,
-                    VSMDiscoveryItem(
+                    VsmDiscoveryItem(
                         repository.cloneUrl,
                         downloadedFolder,
                         repository.sourceType,

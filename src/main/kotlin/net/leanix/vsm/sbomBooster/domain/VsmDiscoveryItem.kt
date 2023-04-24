@@ -1,6 +1,6 @@
 package net.leanix.vsm.sbomBooster.domain
 
-data class VSMDiscoveryItem(
+data class VsmDiscoveryItem(
     val projectUrl: String,
     val downloadedFolder: String,
     val sourceType: String,

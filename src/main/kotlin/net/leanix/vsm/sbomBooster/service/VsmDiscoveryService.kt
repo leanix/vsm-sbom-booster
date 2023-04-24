@@ -1,7 +1,7 @@
 package net.leanix.vsm.sbomBooster.service
 
 import net.leanix.vsm.sbomBooster.VsmSbomBoosterApplication
-import net.leanix.vsm.sbomBooster.domain.VSMDiscoveryItem
+import net.leanix.vsm.sbomBooster.domain.VsmDiscoveryItem
 import org.cyclonedx.BomParserFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -30,7 +30,7 @@ class VsmDiscoveryService(
     fun sendToVsm(
         leanIxToken: String,
         region: String,
-        discoveryItem: VSMDiscoveryItem
+        discoveryItem: VsmDiscoveryItem
     ) {
         val restTemplate = RestTemplate()
         val headers = HttpHeaders()
