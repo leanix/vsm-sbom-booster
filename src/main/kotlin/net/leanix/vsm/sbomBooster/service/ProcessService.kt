@@ -19,16 +19,12 @@ class ProcessService(
 ) {
     companion object {
         private val logger: Logger = LoggerFactory.getLogger(ProcessService::class.java)
-        private var initStatus: Boolean = false
     }
 
     fun initOrt() {
-        if (!initStatus) {
-            logger.info("Pulling the latest version of ORT...")
-            ortService.pullOrt()
-            initStatus = true
-            logger.info("Pulled the latest version of ORT!")
-        }
+        logger.info("Pulling the latest version of ORT...")
+        ortService.pullOrt()
+        logger.info("Pulled the latest version of ORT!")
     }
 
     @Async
@@ -37,8 +33,6 @@ class ProcessService(
         username: String?,
         repository: Repository
     ) {
-        initOrt()
-
         val startInstant = Instant.now()
         var downloadedFolder: String? = null
         if (!username.isNullOrBlank()) {

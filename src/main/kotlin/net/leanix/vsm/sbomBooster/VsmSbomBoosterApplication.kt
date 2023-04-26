@@ -55,6 +55,8 @@ class VsmSbomBoosterApplication(
 
         logger.info("Discovered ${repositories.size} repositories to process.")
 
+        processService.initOrt()
+
         repositories.forEach {
             processService.processRepository(
                 propertiesConfiguration,

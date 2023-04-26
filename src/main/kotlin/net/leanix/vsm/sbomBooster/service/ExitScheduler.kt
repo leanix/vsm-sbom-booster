@@ -20,7 +20,7 @@ class ExitScheduler(
         private val logger: Logger = LoggerFactory.getLogger(ExitScheduler::class.java)
     }
 
-    @Scheduled(fixedRate = 100000, initialDelay = 300000)
+    @Scheduled(fixedRate = 100000, initialDelay = 30000)
     fun checkPendingTasks() {
         val tasksSubmitted = threadPoolTaskExecutor.threadPoolExecutor.taskCount
         val tasksCompleted = threadPoolTaskExecutor.threadPoolExecutor.completedTaskCount
@@ -30,7 +30,7 @@ class ExitScheduler(
         logger.info(
             "Progress: ${String.format(
                 Locale.ENGLISH,
-                "%.2f", (tasksCompleted.toDouble() / tasksSubmitted.toDouble()) * 100
+                "%.2f", getPercentage(tasksCompleted.toDouble(), tasksSubmitted.toDouble())
             )} % " +
                 "Success rate: ${String.format(
                     Locale.ENGLISH,

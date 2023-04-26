@@ -73,7 +73,7 @@ The second `-v` param is the path to temporary folder that the `vsm-sbom-booster
 
 #### GIT
 
-`GIT_PPROVIDER`: This is the Git provider to scan and generate SBOMs from. For now, either `GITHUB` or `GITLAB`.
+`GIT_PROVIDER`: This is the Git provider to scan and generate SBOMs from. For now, either `GITHUB` or `GITLAB`.
 
 #### GITHUB (only if `GIT_PROVIDER` is `GITHUB`)
 
