@@ -67,7 +67,8 @@ class ProcessService(
 
                 val vsmRegion = extractVsmRegion(accessToken)
 
-                vsmDiscoveryService.sendToVsm(accessToken!!,
+                vsmDiscoveryService.sendToVsm(
+                    accessToken,
                     vsmRegion,
                     VsmDiscoveryItem(
                         repository.cloneUrl,
@@ -75,7 +76,8 @@ class ProcessService(
                         repository.sourceType,
                         repository.sourceInstance,
                         repository.name
-                    ))
+                    )
+                )
             } catch (e: Exception) {
                 logger.error(e.message)
             } finally {

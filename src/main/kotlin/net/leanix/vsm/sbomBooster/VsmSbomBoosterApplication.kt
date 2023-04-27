@@ -40,10 +40,6 @@ class VsmSbomBoosterApplication(
         summaryReportService.appendRecord("MOUNTED_VOLUME: ${propertiesConfiguration.mountedVolume}\n")
         summaryReportService.appendRecord("CONCURRENCY_FACTOR: ${propertiesConfiguration.concurrencyFactor}\n\n")
 
-        summaryReportService.appendRecord("LEANIX_REGION: ${propertiesConfiguration.leanIxRegion}\n")
-
-        if (propertiesConfiguration.leanIxHost == "")
-            propertiesConfiguration.leanIxHost = propertiesConfiguration.leanIxRegion
         summaryReportService.appendRecord("LEANIX_HOST: ${propertiesConfiguration.leanIxHost}\n")
 
         summaryReportService.appendRecord("SOURCE_TYPE: ${propertiesConfiguration.sourceType}\n")
