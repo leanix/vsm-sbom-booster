@@ -21,7 +21,6 @@ docker run --pull=always --rm \
            -v <temp-folder-to-be-used-for-storing-data>:/tempDir \
            -e MOUNTED_VOLUME='<temp-folder-to-be-used-for-storing-data>' \
            -e LEANIX_HOST='<leanix-workspace-host>' \
-           -e LEANIX_REGION='<leanix-workspace-region>' \
            -e LEANIX_TOKEN='<leanix-technical-user-token>' \
            -e GIT_PROVIDER='GITHUB' \
            -e GITHUB_TOKEN='<github-token>' \
@@ -36,7 +35,6 @@ docker run --pull=always --rm \
            -v <temp-folder-to-be-used-for-storing-data>:/tempDir \
            -e MOUNTED_VOLUME='<temp-folder-to-be-used-for-storing-data>' \
            -e LEANIX_HOST='<leanix-workspace-host>' \
-           -e LEANIX_REGION='<leanix-workspace-region>' \
            -e LEANIX_TOKEN='<leanix-technical-user-token>' \
            -e GIT_PROVIDER='GITLAB' \
            -e GITLAB_TOKEN='<gitlab-token>' \
@@ -61,9 +59,7 @@ The second `-v` param is the path to temporary folder that the `vsm-sbom-booster
 
 `LEANIX_TOKEN`: API token with **ADMIN** rights from your VSM workspace. (see admin > technical users).
 
-`LEANIX_REGION`: The region that your VSM workspace is hosted in. One of: eu|de|us|au|ca|ch
-
-`LEANIX_HOST` (optional): The host name of your LeanIX workspace. The region should work for most every case, so omitting this value will make it default to the REGION instead. e.g. For `https://acme.leanix.net` you would provide `acme`
+`LEANIX_HOST`: The host name of your LeanIX workspace. (e.g. For `https://acme.leanix.net` you would provide `acme`)
 
 #### [Discovery API data](https://docs-vsm.leanix.net/reference/discovery_service)
 

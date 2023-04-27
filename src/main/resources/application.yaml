@@ -6,7 +6,6 @@ leanix:
 
     # LeanIX configs
     leanix-host: ${LEANIX_HOST:}
-    leanix-region: ${LEANIX_REGION:}
     leanIx-token: ${LEANIX_TOKEN:}
 
     # Discovery API data

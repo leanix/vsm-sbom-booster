@@ -18,7 +18,6 @@ data class PropertiesConfiguration(
     @field:NotBlank
     val leanIxToken: String,
     @field:NotBlank
-    val leanIxRegion: String,
     var leanIxHost: String,
 
     // Discovery API data

@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import java.time.Instant
+import java.util.Base64
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -63,17 +64,18 @@ class ProcessService(
                     propertiesConfiguration.leanIxHost,
                     propertiesConfiguration.leanIxToken
                 )
-                vsmDiscoveryService.sendToVsm(
-                    accessToken!!,
-                    propertiesConfiguration.leanIxRegion,
+
+                val vsmRegion = extractVsmRegion(accessToken)
+
+                vsmDiscoveryService.sendToVsm(accessToken!!,
+                    vsmRegion,
                     VsmDiscoveryItem(
                         repository.cloneUrl,
                         downloadedFolder,
                         repository.sourceType,
                         repository.sourceInstance,
                         repository.name
-                    )
-                )
+                    ))
             } catch (e: Exception) {
                 logger.error(e.message)
             } finally {
@@ -90,5 +92,12 @@ class ProcessService(
         logger.info(
             "Processed repository with url: ${repository.cloneUrl} in $duration"
         )
+    }
+
+    private fun extractVsmRegion(accessToken: String): String {
+        val decoder = Base64.getDecoder()
+        val payload = String(decoder.decode(accessToken.split(".")[1]))
+
+        return payload.substringAfter("\"iss\":\"https://").substringBefore("-svc.leanix.net")
     }
 }

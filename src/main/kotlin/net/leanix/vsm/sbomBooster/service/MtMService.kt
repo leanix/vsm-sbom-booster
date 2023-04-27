@@ -13,7 +13,7 @@ import java.util.*
 @Service
 class MtMService {
 
-    fun getAccessToken(host: String, lxToken: String): String? {
+    fun getAccessToken(host: String, lxToken: String): String {
         val restTemplate = RestTemplate()
         val headers = HttpHeaders()
 
@@ -32,6 +32,6 @@ class MtMService {
             MtMResponse::class.java
         )
 
-        return responseEntity.body?.accessToken
+        return responseEntity.body!!.accessToken
     }
 }
