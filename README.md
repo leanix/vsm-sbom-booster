@@ -19,6 +19,7 @@ docker run --pull=always \
            -v /var/run/docker.sock:/var/run/docker.sock \
            -v <temp-folder-to-be-used-for-storing-data>:/tempDir \
            -e MOUNTED_VOLUME='<temp-folder-to-be-used-for-storing-data>' \
+           -e HOST='<leanix-region>' \
            -e LEANIX_TOKEN='<leanix-technical-user-token>' \
            -e GITHUB_TOKEN='<github-token>' \
            -e GITHUB_ORGANIZATION='<github-organization>' \
