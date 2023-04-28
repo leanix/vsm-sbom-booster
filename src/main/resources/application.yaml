@@ -5,7 +5,7 @@ leanix:
     concurrency-factor: ${CONCURRENCY_FACTOR:3}
 
     # LeanIX configs
-    leanix-host: ${LEANIX_HOST:}
+    leanIx-host: ${LEANIX_HOST:}
     leanIx-token: ${LEANIX_TOKEN:}
 
     # Discovery API data
