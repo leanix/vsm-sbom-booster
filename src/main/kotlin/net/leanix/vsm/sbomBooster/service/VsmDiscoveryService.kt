@@ -1,7 +1,7 @@
 package net.leanix.vsm.sbomBooster.service
 
 import net.leanix.vsm.sbomBooster.VsmSbomBoosterApplication
-import net.leanix.vsm.sbomBooster.configuration.PropertiesConfiguration
+import net.leanix.vsm.sbomBooster.domain.VsmDiscoveryItem
 import org.cyclonedx.BomParserFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -19,7 +19,6 @@ import java.nio.file.Paths
 
 @Service
 class VsmDiscoveryService(
-    private val propertiesConfiguration: PropertiesConfiguration,
     private val summaryReportService: SummaryReportService
 ) {
 
@@ -28,7 +27,11 @@ class VsmDiscoveryService(
         const val SOURCE_CUSTOM_HEADER = "X-Lx-Vsm-Discovery-Source"
     }
 
-    fun sendToVsm(projectUrl: String, downloadedFolder: String, leanIxToken: String, region: String) {
+    fun sendToVsm(
+        leanIxToken: String,
+        region: String,
+        discoveryItem: VsmDiscoveryItem
+    ) {
         val restTemplate = RestTemplate()
         val headers = HttpHeaders()
         headers.contentType = MediaType.MULTIPART_FORM_DATA
@@ -37,17 +40,23 @@ class VsmDiscoveryService(
 
         val multipartBodyBuilder = MultipartBodyBuilder()
 
-        multipartBodyBuilder.part("id", projectUrl.substringAfterLast("/"))
-        multipartBodyBuilder.part("sourceType", propertiesConfiguration.sourceType)
-        multipartBodyBuilder.part("sourceInstance", propertiesConfiguration.sourceInstance)
-        multipartBodyBuilder.part("name", projectUrl.substringAfterLast("/"))
+        multipartBodyBuilder.part("id", discoveryItem.name)
+        multipartBodyBuilder.part("sourceType", discoveryItem.sourceType)
+        multipartBodyBuilder.part("sourceInstance", discoveryItem.sourceInstance)
+        multipartBodyBuilder.part("name", discoveryItem.name)
 
         val sbomFile: Resource = FileSystemResource(
-            "${ Paths.get("tempDir").toAbsolutePath()}" +
-                "/$downloadedFolder/bom.cyclonedx.json"
+            "${Paths.get("tempDir").toAbsolutePath()}" +
+                "/${discoveryItem.downloadedFolder}/bom.cyclonedx.json"
         )
 
-        val sbomByteArray = Files.readAllBytes(Paths.get("tempDir", downloadedFolder, "bom.cyclonedx.json"))
+        val sbomByteArray = Files.readAllBytes(
+            Paths.get(
+                "tempDir",
+                discoveryItem.downloadedFolder,
+                "bom.cyclonedx.json"
+            )
+        )
 
         val parser = BomParserFactory.createParser(sbomByteArray)
 
@@ -67,10 +76,12 @@ class VsmDiscoveryService(
 
             logger.info("Response received from VSM: $responseEntity")
             VsmSbomBoosterApplication.counter.getAndIncrement()
-            summaryReportService.appendRecord("Successfully processed repository with url: $projectUrl \n")
+            summaryReportService.appendRecord(
+                "Successfully processed repository with url: ${discoveryItem.projectUrl} \n"
+            )
         } else {
-            logger.info("No components found in the SBOM file for repository $projectUrl")
-            summaryReportService.appendRecord("Failed to process repository with url: $projectUrl \n")
+            logger.info("No components found in the SBOM file for repository ${discoveryItem.projectUrl}")
+            summaryReportService.appendRecord("Failed to process repository with url: ${discoveryItem.projectUrl} \n")
         }
     }
 }

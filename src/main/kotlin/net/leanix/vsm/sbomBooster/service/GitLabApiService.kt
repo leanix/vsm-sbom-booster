@@ -5,22 +5,22 @@ import kotlinx.coroutines.runBlocking
 import net.leanix.vsm.sbomBooster.configuration.PropertiesConfiguration
 import net.leanix.vsm.sbomBooster.domain.GitProviderApiService
 import net.leanix.vsm.sbomBooster.domain.Repository
-import net.leanix.vsm.sbomBooster.graphql.generated.github.GetRepositoriesPaginated
-import net.leanix.vsm.sbomBooster.graphql.generated.github.GetUsername
+import net.leanix.vsm.sbomBooster.graphql.generated.gitlab.GetRepositoriesPaginated
+import net.leanix.vsm.sbomBooster.graphql.generated.gitlab.GetUsername
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
-class GitHubApiService(
+class GitLabApiService(
     private val propertiesConfiguration: PropertiesConfiguration
 ) : GitProviderApiService {
     companion object {
-        val logger: Logger = LoggerFactory.getLogger(GitHubApiService::class.java)
+        val logger: Logger = LoggerFactory.getLogger(GitLabApiService::class.java)
     }
 
     override fun getUsername(token: String?): String? {
-        val client = GraphQLWebClient(url = propertiesConfiguration.githubGraphqlApiUrl)
+        val client = GraphQLWebClient(url = propertiesConfiguration.gitlabGraphqlApiUrl)
         var username: String? = null
         runBlocking {
             val getUsernameQuery = GetUsername()
@@ -32,7 +32,7 @@ class GitHubApiService(
                 if (result.errors?.isNotEmpty() == true) {
                     logger.error("Result: ${result.errors?.get(0)?.message}")
                 } else {
-                    username = result.data?.viewer?.login
+                    username = result.data?.currentUser?.username
                 }
             } catch (e: Exception) {
                 logger.error("${e.message}")
@@ -43,7 +43,7 @@ class GitHubApiService(
     }
 
     override fun getRepositories(token: String?, organization: String): List<Repository> {
-        val client = GraphQLWebClient(url = "https://api.github.com/graphql")
+        val client = GraphQLWebClient(url = propertiesConfiguration.gitlabGraphqlApiUrl)
         var resultscounter: Int? = 0
         var afterParameter: String? = null
         val repositoriesList = mutableListOf<Repository>()
@@ -66,22 +66,23 @@ class GitHubApiService(
                     if (result.errors?.isNotEmpty() == true) {
                         logger.error("Result: ${result.errors?.get(0)?.message}")
                     } else {
-                        resultscounter = result.data?.viewer?.organization?.repositories?.edges?.size
+                        resultscounter = result.data?.group?.projects?.nodes?.size
                         if (resultscounter != 0) {
-                            afterParameter = result.data?.viewer?.organization?.repositories?.edges?.last()?.cursor
-                            result.data?.viewer?.organization?.repositories?.edges?.forEach {
-                                // Figure out what sourceInstance to use
+                            afterParameter = result.data?.group?.projects?.pageInfo?.endCursor
+                            result.data?.group?.projects?.nodes?.forEach {
+
                                 val sourceInstance: String = if (propertiesConfiguration.sourceInstance == "")
-                                    propertiesConfiguration.githubOrganization
+                                    it?.fullPath?.substringBeforeLast("/")
+                                        ?: propertiesConfiguration.gitlabGroup
                                 else
                                     propertiesConfiguration.sourceInstance
 
                                 repositoriesList.add(
                                     Repository(
-                                        it?.node?.url.toString(),
+                                        it?.httpUrlToRepo ?: "",
                                         propertiesConfiguration.sourceType,
                                         sourceInstance,
-                                        it?.node?.name.toString()
+                                        it?.name.toString()
                                     )
                                 )
                             }

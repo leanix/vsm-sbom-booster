@@ -1,5 +1,8 @@
 package net.leanix.vsm.sbomBooster.service
 
+import net.leanix.vsm.sbomBooster.configuration.PropertiesConfiguration
+import net.leanix.vsm.sbomBooster.domain.Repository
+import net.leanix.vsm.sbomBooster.domain.VsmDiscoveryItem
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async
@@ -19,35 +22,62 @@ class ProcessService(
         private val logger: Logger = LoggerFactory.getLogger(ProcessService::class.java)
     }
 
+    fun initOrt() {
+        logger.info("Pulling the latest version of ORT...")
+        ortService.pullOrt()
+        logger.info("Pulled the latest version of ORT!")
+    }
+
     @Async
     fun processRepository(
+        propertiesConfiguration: PropertiesConfiguration,
         username: String?,
-        projectUrl: String,
-        githubToken: String,
-        leanIxToken: String,
-        region: String
+        repository: Repository
     ) {
         val startInstant = Instant.now()
         var downloadedFolder: String? = null
         if (!username.isNullOrBlank()) {
             try {
-                downloadedFolder = ortService.downloadProject(projectUrl, username, githubToken)
-                logger.info("Finished downloading repository with url: $projectUrl to temp folder: $downloadedFolder")
+                logger.info("Beginning to download repository with url: ${repository.cloneUrl}")
+                downloadedFolder = ortService.downloadProject(
+                    repository.cloneUrl,
+                    username,
+                    propertiesConfiguration.githubToken
+                )
+                logger.info(
+                    "Finished downloading repository with url: ${repository.cloneUrl} to temp folder: $downloadedFolder"
+                )
 
+                logger.info("Beginning to analyze repository with url: ${repository.cloneUrl}")
                 ortService.analyzeProject(downloadedFolder)
-                logger.info("Finished analyzing repository with url: $projectUrl in temp folder $downloadedFolder")
+                logger.info(
+                    "Finished analyzing repository with url: ${repository.cloneUrl} in temp folder $downloadedFolder"
+                )
 
                 ortService.generateSbom(downloadedFolder)
                 logger.info(
                     "Finished generating SBOM file for repository with url: " +
-                        "$projectUrl in temp folder $downloadedFolder."
+                        "${repository.cloneUrl} in temp folder $downloadedFolder."
                 )
 
-                val accessToken = mtMService.getAccessToken(region, leanIxToken)
+                val accessToken = mtMService.getAccessToken(
+                    propertiesConfiguration.leanIxHost,
+                    propertiesConfiguration.leanIxToken
+                )
 
                 val vsmRegion = extractVsmRegion(accessToken)
 
-                vsmDiscoveryService.sendToVsm(projectUrl, downloadedFolder, accessToken!!, vsmRegion)
+                vsmDiscoveryService.sendToVsm(
+                    accessToken,
+                    vsmRegion,
+                    VsmDiscoveryItem(
+                        repository.cloneUrl,
+                        downloadedFolder,
+                        repository.sourceType,
+                        repository.sourceInstance,
+                        repository.name
+                    )
+                )
             } catch (e: Exception) {
                 logger.error(e.message)
             } finally {
@@ -62,7 +92,7 @@ class ProcessService(
             ).toDuration(DurationUnit.MILLISECONDS)
 
         logger.info(
-            "Processed repository with url: $projectUrl in $duration"
+            "Processed repository with url: ${repository.cloneUrl} in $duration"
         )
     }
 

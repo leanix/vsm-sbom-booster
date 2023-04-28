@@ -1,11 +1,26 @@
 leanix:
   vsm:
+    # Runtime settings
     mounted-volume: ${MOUNTED_VOLUME:}
-    leanIx-token: ${LEANIX_TOKEN:}
-    github-graphql-api-url: ${GITHUB_GRAPHQL_API_URL:https://api.github.com/graphql}
-    github-token: ${GITHUB_TOKEN:}
-    github-organization: ${GITHUB_ORGANIZATION:}
-    host: ${HOST:}
     concurrency-factor: ${CONCURRENCY_FACTOR:3}
+
+    # LeanIX configs
+    leanIx-host: ${LEANIX_HOST:}
+    leanIx-token: ${LEANIX_TOKEN:}
+
+    # Discovery API data
     source-type: ${SOURCE_TYPE:vsm-sbom-booster}
     source-instance: ${SOURCE_INSTANCE:}
+
+    # GIT
+    git-provider: ${GIT_PROVIDER:GITHUB}
+
+    ## GITHUB
+    github-api-host: ${GITHUB_API_HOST:api.github.com}
+    github-token: ${GITHUB_TOKEN:}
+    github-organization: ${GITHUB_ORGANIZATION:}
+
+    ## GITLAB
+    gitlab-api-host: ${GITLAB_API_HOST:gitlab.com}
+    gitlab-token: ${GITLAB_TOKEN:}
+    gitlab-group: ${GITLAB_GROUP:}

@@ -14,43 +14,78 @@ We use this prototype internally to LeanIX to generate SBOMs for our projects. I
 
 1. Run the Docker container from the latest image:
 
+GitHub:
 ```console
-docker run --pull=always \
+docker run --pull=always --rm \
            -v /var/run/docker.sock:/var/run/docker.sock \
            -v <temp-folder-to-be-used-for-storing-data>:/tempDir \
            -e MOUNTED_VOLUME='<temp-folder-to-be-used-for-storing-data>' \
-           -e HOST='<leanix-region>' \
+           -e LEANIX_HOST='<leanix-workspace-host>' \
            -e LEANIX_TOKEN='<leanix-technical-user-token>' \
+           -e GIT_PROVIDER='GITHUB' \
            -e GITHUB_TOKEN='<github-token>' \
            -e GITHUB_ORGANIZATION='<github-organization>' \
-           leanixacrpublic.azurecr.io/vsm-sbom-booster -rm
+           leanixacrpublic.azurecr.io/vsm-sbom-booster
 ```
+
+GitLab:
+```console
+docker run --pull=always --rm \
+           -v /var/run/docker.sock:/var/run/docker.sock \
+           -v <temp-folder-to-be-used-for-storing-data>:/tempDir \
+           -e MOUNTED_VOLUME='<temp-folder-to-be-used-for-storing-data>' \
+           -e LEANIX_HOST='<leanix-workspace-host>' \
+           -e LEANIX_TOKEN='<leanix-technical-user-token>' \
+           -e GIT_PROVIDER='GITLAB' \
+           -e GITLAB_TOKEN='<gitlab-token>' \
+           -e GITLAB_GROUP='<gitlab-group>' \
+           leanixacrpublic.azurecr.io/vsm-sbom-booster
+```
+
 2. After a while your mapping inbox should be receiving new discovery items. These will need to be mapped by you once (see our [user documentation](https://docs-vsm.leanix.net/docs/discover-automate#create-your-service-baseline)).
 
 ### Environment Variables
 
+#### Runtime settings
 The first `-v` param is needed as the setup is a docker-in-docker setup and will need to mount the local docker runtime into the container. Under normal circumstances this param can be copied and pasted.
 
 The second `-v` param is the path to temporary folder that the `vsm-sbom-booster`will use to temporarily clone the projects to attempt to generate the SBOM. e.g. `~/output/temp`. Docker should have Read/Write access on this folder.
 
 `MOUNTED_VOLUME`: this is the same as the second `-v` param. It's required as the container needs an explicit env variable to do its job.
 
+`CONCURRENCY_FACTOR`(optional): the number of parallel jobs `vsm-sbom-booster` will use to generate SBOMs. Note: increasing this number will come at higher compute costs. Default: 3
+
+#### LeanIX configs
+
 `LEANIX_TOKEN`: API token with **ADMIN** rights from your VSM workspace. (see admin > technical users).
+
+`LEANIX_HOST`: The host name of your LeanIX workspace. (e.g. For `https://acme.leanix.net` you would provide `acme`)
+
+#### [Discovery API data](https://docs-vsm.leanix.net/reference/discovery_service)
+
+`SOURCE_TYPE` (optional): this will the source system from where you're scanning. This is used in the mapping inbox to understand where discovered data originated from. Default: `vsm-sbom-booster`
+
+`SOURCE_INSTANCE`(optional): individual instance within the source system e.g. prod or org entity within the source system. This is used in the mapping inbox to understand where discovered data originated from. Default: GitHub Org or GitLab Group + Sub Groups
+
+#### GIT
+
+`GIT_PROVIDER`: This is the Git provider to scan and generate SBOMs from. For now, either `GITHUB` or `GITLAB`.
+
+#### GITHUB (only if `GIT_PROVIDER` is `GITHUB`)
 
 `GITHUB_TOKEN`: The [Personal Access Token](https://github.com/leanix/vsm-github-broker#personal-access-token) with `read:org` scope. 
 
 `GITHUB_ORGANIZATION`: the GitHub organization name which `vsm-sbom-booster`shall scan and try to generate the SBOMs for.
 
-`HOST`: This is the region where your workspace is hosted. Most likely you can just copy it from your workspace url. Example: www.acme.leanix.net it will be `acme`.
+`GITHUB_API_HOST` (optional): if you want to connect the `vsm-sbom-booster`with GitHub Enterprise you will need to provide the host where the GitHub GraphQL API is exposed. e.g. For `https://ghe.domain.com` you would provide `ghe.domain.com`
 
-`GITHUB_GRAPHQL_API_URL` (optional): if you want to connect the `vsm-sbom-booster`with GitHub Enterprise you will need to provide the url where the GitHub GraphQL API is exposed. e.g. `https://ghe.domain.com`
+#### GITLAB (only if `GIT_PROVIDER` is `GITLAB`)
 
-`SOURCE_TYPE` (optional): this will the source system from where you're scanning. This is used in the mapping inbox to understand where discovered data originated from. Default: `vsm-sbom-booster`
+`GITLAB_TOKEN`: The Personal Access Token with API read permissions.
 
-`SOURCE_INSTANCE`(optional): individual instance within the source system e.g. prod or org entity within the source system. This is used in the mapping inbox to understand where discovered data originated from. Default: `{GITHUB_ORGANIZATION}`
+`GITLAB_GROUP`: the GitLab group name which `vsm-sbom-booster`shall scan and try to generate the SBOMs for.
 
-`CONCURRENCY_FACTOR`(optional): the number of parallel jobs `vsm-sbom-booster` will use to generate SBOMs. Note: increasing this number will come at higher compute costs. Default: 3
-
+`GITLAB_API_HOST` (optional): if you want to connect the `vsm-sbom-booster`with GitLab self-hosted you will need to provide the host where the GitLab GraphQL API is exposed. e.g. For `https://gl.domain.com` you would provide `gl.domain.com`
 
 
 ## Technical Notes
