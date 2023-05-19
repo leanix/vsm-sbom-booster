@@ -31,18 +31,19 @@ class ProcessService(
     @Async
     fun processRepository(
         propertiesConfiguration: PropertiesConfiguration,
-        username: String?,
+        username: String,
+        token: String,
         repository: Repository
     ) {
         val startInstant = Instant.now()
         var downloadedFolder: String? = null
-        if (!username.isNullOrBlank()) {
+        if (username.isNotBlank()) {
             try {
                 logger.info("Beginning to download repository with url: ${repository.cloneUrl}")
                 downloadedFolder = ortService.downloadProject(
                     repository.cloneUrl,
                     username,
-                    propertiesConfiguration.githubToken
+                    token
                 )
                 logger.info(
                     "Finished downloading repository with url: ${repository.cloneUrl} to temp folder: $downloadedFolder"
