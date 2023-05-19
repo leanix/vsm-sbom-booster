@@ -1,7 +1,9 @@
 package net.leanix.vsm.sbomBooster
 
 import net.leanix.vsm.sbomBooster.configuration.PropertiesConfiguration
+import net.leanix.vsm.sbomBooster.domain.GitCredentials
 import net.leanix.vsm.sbomBooster.domain.Repository
+import net.leanix.vsm.sbomBooster.service.BitBucketApiService
 import net.leanix.vsm.sbomBooster.service.GitHubApiService
 import net.leanix.vsm.sbomBooster.service.GitLabApiService
 import net.leanix.vsm.sbomBooster.service.ProcessService
@@ -20,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger
 class VsmSbomBoosterApplication(
     private val gitHubApiService: GitHubApiService,
     private val gitLabApiService: GitLabApiService,
+    private val bitBucketApiService: BitBucketApiService,
     private val processService: ProcessService,
     private val propertiesConfiguration: PropertiesConfiguration,
     private val summaryReportService: SummaryReportService
@@ -47,7 +50,7 @@ class VsmSbomBoosterApplication(
 
         summaryReportService.appendRecord("GIT_PROVIDER: ${propertiesConfiguration.gitProvider.uppercase()}\n")
 
-        val (username, repositories) = getRepositories()
+        val (credentials, repositories) = getRepositories()
 
         logger.info("Discovered ${repositories.size} repositories to process.")
 
@@ -56,15 +59,17 @@ class VsmSbomBoosterApplication(
         repositories.forEach {
             processService.processRepository(
                 propertiesConfiguration,
-                username,
+                credentials.username,
+                credentials.token,
                 it
             )
         }
     }
 
-    fun getRepositories(): Pair<String?, List<Repository>> {
+    fun getRepositories(): Pair<GitCredentials, List<Repository>> {
         val repositories: List<Repository>
         val username: String?
+        val token: String?
         when (propertiesConfiguration.gitProvider.uppercase()) {
             "GITHUB" -> {
                 summaryReportService.appendRecord(
@@ -76,6 +81,7 @@ class VsmSbomBoosterApplication(
                 )
 
                 username = gitHubApiService.getUsername(propertiesConfiguration.githubToken)
+                token = propertiesConfiguration.githubToken
                 repositories = gitHubApiService.getRepositories(
                     propertiesConfiguration.githubToken, propertiesConfiguration.githubOrganization
                 )
@@ -88,8 +94,23 @@ class VsmSbomBoosterApplication(
                 summaryReportService.appendRecord("GITLAB_GROUP: ${propertiesConfiguration.gitlabGroup}\n")
 
                 username = gitLabApiService.getUsername(propertiesConfiguration.gitlabToken)
+                token = propertiesConfiguration.gitlabToken
                 repositories = gitLabApiService.getRepositories(
                     propertiesConfiguration.gitlabToken, propertiesConfiguration.gitlabGroup
+                )
+            }
+            "BITBUCKET" -> {
+                summaryReportService.appendRecord(
+                    "BITBUCKET_WORKSPACE: ${propertiesConfiguration.bitbucketWorkspace}\n"
+                )
+
+                val bitBucketToken =
+                    "${propertiesConfiguration.bitbucketKey}:${propertiesConfiguration.bitbucketSecret}"
+
+                username = bitBucketApiService.getUsername("")
+                token = bitBucketApiService.authenticate(bitBucketToken)
+                repositories = bitBucketApiService.getRepositories(
+                    bitBucketToken, propertiesConfiguration.bitbucketWorkspace
                 )
             }
             else -> {
@@ -101,7 +122,7 @@ class VsmSbomBoosterApplication(
                 )
             }
         }
-        return Pair(username, repositories)
+        return Pair(GitCredentials(username ?: "", token ?: ""), repositories)
     }
 }
 

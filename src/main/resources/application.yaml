@@ -24,3 +24,8 @@ leanix:
     gitlab-api-host: ${GITLAB_API_HOST:gitlab.com}
     gitlab-token: ${GITLAB_TOKEN:}
     gitlab-group: ${GITLAB_GROUP:}
+
+    ## BITBUCKET
+    bitbucket-key: ${BITBUCKET_KEY:}
+    bitbucket-secret: ${BITBUCKET_SECRET:}
+    bitbucket-workspace: ${BITBUCKET_WORKSPACE:}
