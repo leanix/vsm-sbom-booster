@@ -40,7 +40,7 @@ class ExitScheduler(
                 " - Tasks submitted: $tasksSubmitted, Tasks completed: $tasksCompleted," +
                 " Tasks pending: $pendingTasks, Tasks active: $tasksActive"
         )
-        if (pendingTasks == 0L) {
+        if (VsmSbomBoosterApplication.gotRepositories && pendingTasks == 0L) {
             logger.info("Submitted ${VsmSbomBoosterApplication.counter.get()} services with SBOM file to VSM.")
             logger.info("You can find a detailed summary report inside the mounted folder.")
             summaryReportService.appendRecord(
