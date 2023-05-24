@@ -5,7 +5,6 @@ import net.leanix.vsm.sbomBooster.domain.BitBucketAuthResponse
 import net.leanix.vsm.sbomBooster.domain.BitBucketRepositoriesResponse
 import net.leanix.vsm.sbomBooster.domain.GitProviderApiService
 import net.leanix.vsm.sbomBooster.domain.Repository
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -23,7 +22,7 @@ class BitBucketApiService(
 ) : GitProviderApiService {
 
     companion object {
-        val logger: Logger = LoggerFactory.getLogger(BitBucketApiService::class.java)
+        private val logger = LoggerFactory.getLogger(BitBucketApiService::class.java)
     }
 
     override fun getUsername(token: String?): String? {
@@ -32,45 +31,44 @@ class BitBucketApiService(
 
     override fun getRepositories(token: String?, organization: String): List<Repository> {
         val bearerToken = authenticate(token)
+        logger.info("Bearer token: $bearerToken")
 
         return getPaginatedRepositories(bearerToken, organization, null)
     }
 
-    fun getPaginatedRepositories(bearerToken: String?, organization: String, pageUrl: String?): List<Repository> {
-
+    private fun getPaginatedRepositories(
+        bearerToken: String?,
+        organization: String,
+        pageUrl: String?
+    ): List<Repository> {
         val restTemplate = RestTemplate()
         val headers = HttpHeaders()
 
         headers.set("Authorization", "Bearer $bearerToken")
-        val httpEntity: HttpEntity<*> = HttpEntity<MultiValueMap<String, String>>(headers)
+        val httpEntity: HttpEntity<MultiValueMap<String, String>> =
+            HttpEntity(headers)
 
-        val url: String = if (pageUrl !== null)
-            pageUrl
-        else
-            "https://api.bitbucket.org/2.0/repositories/$organization"
+        val url = pageUrl ?: "https://api.bitbucket.org/2.0/repositories/$organization"
+        logger.info("API URL: $url")
 
         val responseEntity = restTemplate.exchange(
             url, HttpMethod.GET, httpEntity,
             BitBucketRepositoriesResponse::class.java
         )
-
-        val bbRepositoriesResponse = responseEntity.body!!.values
+        val bbRepositoriesResponse = responseEntity.body?.values ?: emptyList()
 
         val repositories = mutableListOf<Repository>()
         for (bbRepo in bbRepositoriesResponse) {
-            // Finds the http clone URL and removes the username from it
             val cloneUrl =
                 bbRepo.links.clone.firstOrNull { it.name == "https" }?.href?.replaceFirst("[^/]+@".toRegex(), "")
-
-            // Figure out what sourceInstance to use
-            val sourceInstance: String = if (propertiesConfiguration.sourceInstance == "")
+            val sourceInstance = if (propertiesConfiguration.sourceInstance.isBlank())
                 propertiesConfiguration.bitbucketWorkspace
             else
                 propertiesConfiguration.sourceInstance
 
             repositories.add(
                 Repository(
-                    cloneUrl ?: "",
+                    cloneUrl.orEmpty(),
                     propertiesConfiguration.sourceType,
                     sourceInstance,
                     bbRepo.name
@@ -78,8 +76,8 @@ class BitBucketApiService(
             )
         }
 
-        if (responseEntity.body!!.next !== null && responseEntity.body!!.next !== "") {
-            val bbRepos = getPaginatedRepositories(bearerToken, organization, responseEntity.body!!.next)
+        if (responseEntity.body?.next.isNullOrBlank().not()) {
+            val bbRepos = getPaginatedRepositories(bearerToken, organization, responseEntity.body?.next)
             repositories.addAll(bbRepos)
         }
 
@@ -87,7 +85,6 @@ class BitBucketApiService(
     }
 
     fun authenticate(token: String?): String? {
-
         val restTemplate = RestTemplate()
         val headers = HttpHeaders()
 
@@ -98,13 +95,17 @@ class BitBucketApiService(
         val requestBody: MultiValueMap<String, String> = LinkedMultiValueMap()
         requestBody.add("grant_type", "client_credentials")
 
-        val httpEntity: HttpEntity<*> = HttpEntity<MultiValueMap<String, String>>(requestBody, headers)
+        val httpEntity: HttpEntity<MultiValueMap<String, String>> =
+            HttpEntity(requestBody, headers)
 
         val responseEntity = restTemplate.postForEntity(
             "https://bitbucket.org/site/oauth2/access_token", httpEntity,
             BitBucketAuthResponse::class.java
         )
 
-        return responseEntity.body!!.accessToken
+        val accessToken = responseEntity.body?.accessToken
+        logger.info("Access token: $accessToken")
+
+        return accessToken
     }
 }
