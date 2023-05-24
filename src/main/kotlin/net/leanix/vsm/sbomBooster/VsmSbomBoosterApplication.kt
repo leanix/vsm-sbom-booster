@@ -52,7 +52,6 @@ class VsmSbomBoosterApplication(
         summaryReportService.appendRecord("GIT_PROVIDER: ${propertiesConfiguration.gitProvider.uppercase()}\n")
 
         val (credentials, repositories) = getRepositories()
-        gotRepositories = true
 
         logger.info("Discovered ${repositories.size} repositories to process.")
 
@@ -65,6 +64,7 @@ class VsmSbomBoosterApplication(
                 credentials.token,
                 it
             )
+            gotRepositories = true
         }
     }
 
