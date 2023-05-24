@@ -57,6 +57,9 @@ class BitBucketApiService(
         )
         val bbRepositoriesResponse = responseEntity.body?.values ?: emptyList()
 
+        logger.info("HTTP Response Code: ${responseEntity.statusCode}")
+        logger.info("Repos on page: ${bbRepositoriesResponse.size}")
+
         val repositories = mutableListOf<Repository>()
         for (bbRepo in bbRepositoriesResponse) {
             val cloneUrl =
@@ -81,6 +84,8 @@ class BitBucketApiService(
             repositories.addAll(bbRepos)
         }
 
+        logger.info("Running Repo Count: ${repositories.size}")
+
         return repositories.toList()
     }
 
@@ -104,7 +109,6 @@ class BitBucketApiService(
         )
 
         val accessToken = responseEntity.body?.accessToken
-        logger.info("Access token: $accessToken")
 
         return accessToken
     }
