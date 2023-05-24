@@ -2,7 +2,7 @@
 
 The `vsm-sbom-booster`is a prototype to centralize & automate ([CycloneDX](https://cyclonedx.org/capabilities/sbom/)) SBOM generation. This helps alleviate impediments with the tedious CI/CD-based approach to amend hundreds of CI/CD pipelines and asking engineers to do yet another task.
 
-The prototype is based on the open-source project [**ORT**](https://github.com/oss-review-toolkit/ort), but entails added capabilities to interact both with Git providers APIs (currently only GitHub Cloud & GitHub Enterprise) and automatic upload of SBOMs to your VSM workspace.
+The prototype is based on the open-source project [**ORT**](https://github.com/oss-review-toolkit/ort), but entails added capabilities to interact both with Git providers APIs (currently only GitHub Cloud, GitHub Enterprise, GitLab Cloud, GitLab Self-Hosted, & BitBucket Cloud) and automatic upload of SBOMs to your VSM workspace.
 
 The prototype only needs access to your repositories to do its job.
 
@@ -42,6 +42,21 @@ docker run --pull=always --rm \
            leanixacrpublic.azurecr.io/vsm-sbom-booster
 ```
 
+BitBucket:
+```console
+docker run --pull=always --rm \
+           -v /var/run/docker.sock:/var/run/docker.sock \
+           -v <temp-folder-to-be-used-for-storing-data>:/tempDir \
+           -e MOUNTED_VOLUME='<temp-folder-to-be-used-for-storing-data>' \
+           -e LEANIX_HOST='<leanix-workspace-host>' \
+           -e LEANIX_TOKEN='<leanix-technical-user-token>' \
+           -e GIT_PROVIDER='BITBUCKET' \
+           -e BITBUCKET_KEY='<bitbucket-key>' \
+           -e BITBUCKET_SECRET='<bitbucket-secret>' \
+           -e BITBUCKET_WORKSPACE='<bitbucket-workspace>' \
+           leanixacrpublic.azurecr.io/vsm-sbom-booster
+```
+
 2. After a while your mapping inbox should be receiving new discovery items. These will need to be mapped by you once (see our [user documentation](https://docs-vsm.leanix.net/docs/discover-automate#create-your-service-baseline)).
 
 ### Environment Variables
@@ -51,9 +66,9 @@ The first `-v` param is needed as the setup is a docker-in-docker setup and will
 
 The second `-v` param is the path to temporary folder that the `vsm-sbom-booster`will use to temporarily clone the projects to attempt to generate the SBOM. e.g. `~/output/temp`. Docker should have Read/Write access on this folder.
 
-`MOUNTED_VOLUME`: this is the same as the second `-v` param. It's required as the container needs an explicit env variable to do its job.
+`MOUNTED_VOLUME`: This is the same as the second `-v` param. It's required as the container needs an explicit env variable to do its job.
 
-`CONCURRENCY_FACTOR`(optional): the number of parallel jobs `vsm-sbom-booster` will use to generate SBOMs. Note: increasing this number will come at higher compute costs. Default: 3
+`CONCURRENCY_FACTOR`(optional): The number of parallel jobs `vsm-sbom-booster` will use to generate SBOMs. Note: increasing this number will come at higher compute costs. Default: 3
 
 #### LeanIX configs
 
@@ -63,9 +78,9 @@ The second `-v` param is the path to temporary folder that the `vsm-sbom-booster
 
 #### [Discovery API data](https://docs-vsm.leanix.net/reference/discovery_service)
 
-`SOURCE_TYPE` (optional): this will the source system from where you're scanning. This is used in the mapping inbox to understand where discovered data originated from. Default: `vsm-sbom-booster`
+`SOURCE_TYPE` (optional): This will the source system from where you're scanning. This is used in the mapping inbox to understand where discovered data originated from. Default: `vsm-sbom-booster`
 
-`SOURCE_INSTANCE`(optional): individual instance within the source system e.g. prod or org entity within the source system. This is used in the mapping inbox to understand where discovered data originated from. Default: GitHub Org or GitLab Group + Sub Groups
+`SOURCE_INSTANCE`(optional): Individual instance within the source system e.g. prod or org entity within the source system. This is used in the mapping inbox to understand where discovered data originated from. Default: GitHub Org or GitLab Group + Sub Groups
 
 #### GIT
 
@@ -75,18 +90,25 @@ The second `-v` param is the path to temporary folder that the `vsm-sbom-booster
 
 `GITHUB_TOKEN`: The [Personal Access Token](https://github.com/leanix/vsm-github-broker#personal-access-token) with `read:org` scope. 
 
-`GITHUB_ORGANIZATION`: the GitHub organization name which `vsm-sbom-booster`shall scan and try to generate the SBOMs for.
+`GITHUB_ORGANIZATION`: The GitHub organization name which `vsm-sbom-booster` shall scan and try to generate the SBOMs for.
 
-`GITHUB_API_HOST` (optional): if you want to connect the `vsm-sbom-booster`with GitHub Enterprise you will need to provide the host where the GitHub GraphQL API is exposed. e.g. For `https://ghe.domain.com` you would provide `ghe.domain.com`
+`GITHUB_API_HOST` (optional): if you want to connect the `vsm-sbom-booster` with GitHub Enterprise you will need to provide the host where the GitHub GraphQL API is exposed. e.g. For `https://ghe.domain.com` you would provide `ghe.domain.com`
 
 #### GITLAB (only if `GIT_PROVIDER` is `GITLAB`)
 
 `GITLAB_TOKEN`: The Personal Access Token with API read permissions.
 
-`GITLAB_GROUP`: the GitLab group name which `vsm-sbom-booster`shall scan and try to generate the SBOMs for.
+`GITLAB_GROUP`: The GitLab group name which `vsm-sbom-booster` shall scan and try to generate the SBOMs for.
 
-`GITLAB_API_HOST` (optional): if you want to connect the `vsm-sbom-booster`with GitLab self-hosted you will need to provide the host where the GitLab GraphQL API is exposed. e.g. For `https://gl.domain.com` you would provide `gl.domain.com`
+`GITLAB_API_HOST` (optional): if you want to connect the `vsm-sbom-booster` with GitLab self-hosted you will need to provide the host where the GitLab GraphQL API is exposed. e.g. For `https://gl.domain.com` you would provide `gl.domain.com`
 
+#### BITBUCKET (only if `GIT_PROVIDER` is `BITBUCKET`)
+
+`BITBUCKET_KEY`: The key to an [OAuth Consumer](https://support.atlassian.com/bitbucket-cloud/docs/integrate-another-application-through-oauth/) with "Private Consumer" enabled and the READ:REPOSITORY permission.
+
+`BITBUCKET_SECRET`: The secret to an [OAuth Consumer](https://support.atlassian.com/bitbucket-cloud/docs/integrate-another-application-through-oauth/) with "Private Consumer" enabled and the READ:REPOSITORY permission.
+
+`BITBUCKET_WORKSPACE`: The BitBucket Workspace name which `vsm-sbom-booster` shall scan and try to generate the SBOMs for.
 
 ## Technical Notes
 ![Technical Architecture](/vsm-sbom-booster.png)

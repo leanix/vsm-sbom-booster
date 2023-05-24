@@ -48,16 +48,12 @@ class BitBucketApiService(
             HttpEntity(headers)
 
         val url = pageUrl ?: "https://api.bitbucket.org/2.0/repositories/$organization"
-        logger.info("API URL: $url")
 
         val responseEntity = restTemplate.exchange(
             url, HttpMethod.GET, httpEntity,
             BitBucketRepositoriesResponse::class.java
         )
         val bbRepositoriesResponse = responseEntity.body?.values ?: emptyList()
-
-        logger.info("HTTP Response Code: ${responseEntity.statusCode}")
-        logger.info("Repos on page: ${bbRepositoriesResponse.size}")
 
         val repositories = mutableListOf<Repository>()
         for (bbRepo in bbRepositoriesResponse) {
@@ -83,8 +79,6 @@ class BitBucketApiService(
             repositories.addAll(bbRepos)
         }
 
-        logger.info("Running Repo Count: ${repositories.size}")
-
         return repositories.toList()
     }
 
@@ -107,8 +101,6 @@ class BitBucketApiService(
             BitBucketAuthResponse::class.java
         )
 
-        val accessToken = responseEntity.body?.accessToken
-
-        return accessToken
+        return responseEntity.body?.accessToken
     }
 }
