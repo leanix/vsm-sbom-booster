@@ -31,7 +31,6 @@ class BitBucketApiService(
 
     override fun getRepositories(token: String?, organization: String): List<Repository> {
         val bearerToken = authenticate(token)
-        logger.info("Bearer token: $bearerToken")
 
         return getPaginatedRepositories(bearerToken, organization, null)
     }
