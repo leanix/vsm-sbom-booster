@@ -30,6 +30,7 @@ class VsmSbomBoosterApplication(
     companion object {
         private val logger: Logger = LoggerFactory.getLogger(VsmSbomBoosterApplication::class.java)
         val counter: AtomicInteger = AtomicInteger(0)
+        var gotRepositories: Boolean = false
     }
 
     override fun run(vararg args: String?) {
@@ -51,6 +52,7 @@ class VsmSbomBoosterApplication(
         summaryReportService.appendRecord("GIT_PROVIDER: ${propertiesConfiguration.gitProvider.uppercase()}\n")
 
         val (credentials, repositories) = getRepositories()
+        gotRepositories = true
 
         logger.info("Discovered ${repositories.size} repositories to process.")
 
