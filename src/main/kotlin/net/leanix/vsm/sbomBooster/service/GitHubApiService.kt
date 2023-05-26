@@ -81,7 +81,8 @@ class GitHubApiService(
                                         it?.node?.url.toString(),
                                         propertiesConfiguration.sourceType,
                                         sourceInstance,
-                                        it?.node?.name.toString()
+                                        it?.node?.name.toString(),
+                                        it?.node?.id.toString()
                                     )
                                 )
                             }

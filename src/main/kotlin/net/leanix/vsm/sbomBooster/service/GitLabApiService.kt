@@ -82,7 +82,8 @@ class GitLabApiService(
                                         it?.httpUrlToRepo ?: "",
                                         propertiesConfiguration.sourceType,
                                         sourceInstance,
-                                        it?.name.toString()
+                                        it?.name.toString(),
+                                        it?.id.toString(),
                                     )
                                 )
                             }
