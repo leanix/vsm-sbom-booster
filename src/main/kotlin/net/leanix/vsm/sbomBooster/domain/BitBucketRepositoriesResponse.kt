@@ -25,6 +25,8 @@ data class BitBucketRepository(
     val name: String,
     @JsonProperty("links")
     val links: BitBucketRepositoryLinks,
+    @JsonProperty("uuid")
+    val uuid: String
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

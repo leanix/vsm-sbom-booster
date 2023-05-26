@@ -5,7 +5,6 @@ import net.leanix.vsm.sbomBooster.domain.BitBucketAuthResponse
 import net.leanix.vsm.sbomBooster.domain.BitBucketRepositoriesResponse
 import net.leanix.vsm.sbomBooster.domain.GitProviderApiService
 import net.leanix.vsm.sbomBooster.domain.Repository
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -20,10 +19,6 @@ import java.util.*
 class BitBucketApiService(
     private val propertiesConfiguration: PropertiesConfiguration
 ) : GitProviderApiService {
-
-    companion object {
-        private val logger = LoggerFactory.getLogger(BitBucketApiService::class.java)
-    }
 
     override fun getUsername(token: String?): String? {
         return propertiesConfiguration.bitbucketWorkspace
@@ -69,7 +64,8 @@ class BitBucketApiService(
                     cloneUrl.orEmpty(),
                     propertiesConfiguration.sourceType,
                     sourceInstance,
-                    bbRepo.name
+                    bbRepo.name,
+                    bbRepo.uuid
                 )
             )
         }
