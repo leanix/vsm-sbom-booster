@@ -41,6 +41,7 @@ class VsmDiscoveryService(
         val multipartBodyBuilder = MultipartBodyBuilder()
 
         multipartBodyBuilder.part("id", discoveryItem.name)
+        multipartBodyBuilder.part("repoId", discoveryItem.repoId)
         multipartBodyBuilder.part("sourceType", discoveryItem.sourceType)
         multipartBodyBuilder.part("sourceInstance", discoveryItem.sourceInstance)
         multipartBodyBuilder.part("name", discoveryItem.name)

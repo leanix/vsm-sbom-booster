@@ -75,7 +75,8 @@ class ProcessService(
                         downloadedFolder,
                         repository.sourceType,
                         repository.sourceInstance,
-                        repository.name
+                        repository.name,
+                        repository.repoId
                     )
                 )
             } catch (e: Exception) {

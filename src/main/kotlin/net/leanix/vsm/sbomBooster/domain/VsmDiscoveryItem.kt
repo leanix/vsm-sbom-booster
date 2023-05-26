@@ -5,5 +5,6 @@ data class VsmDiscoveryItem(
     val downloadedFolder: String,
     val sourceType: String,
     val sourceInstance: String,
-    val name: String
+    val name: String,
+    val repoId: String
 )

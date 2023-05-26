@@ -9,6 +9,7 @@ query GetRepositoriesPaginated($groupName: ID!, $first: Int, $after: String) {
                 httpUrlToRepo
                 fullPath
                 name
+                id
             }
         }
     }
