@@ -20,7 +20,7 @@ class ExitScheduler(
         private val logger: Logger = LoggerFactory.getLogger(ExitScheduler::class.java)
     }
 
-    @Scheduled(fixedRate = 100000, initialDelay = 30000)
+    @Scheduled(fixedRate = 100000, initialDelay = 600000)
     fun checkPendingTasks() {
         val tasksSubmitted = threadPoolTaskExecutor.threadPoolExecutor.taskCount
         val tasksCompleted = threadPoolTaskExecutor.threadPoolExecutor.completedTaskCount
@@ -40,7 +40,7 @@ class ExitScheduler(
                 " - Tasks submitted: $tasksSubmitted, Tasks completed: $tasksCompleted," +
                 " Tasks pending: $pendingTasks, Tasks active: $tasksActive"
         )
-        if (VsmSbomBoosterApplication.gotRepositories && pendingTasks == 0L) {
+        if (pendingTasks == 0L) {
             logger.info("Submitted ${VsmSbomBoosterApplication.counter.get()} services with SBOM file to VSM.")
             logger.info("You can find a detailed summary report inside the mounted folder.")
             summaryReportService.appendRecord(
