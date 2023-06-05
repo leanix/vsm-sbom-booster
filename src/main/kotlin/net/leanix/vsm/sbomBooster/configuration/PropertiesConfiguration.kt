@@ -39,7 +39,12 @@ data class PropertiesConfiguration(
     @field:NotBlank
     val gitlabApiHost: String,
     val gitlabToken: String,
-    val gitlabGroup: String
+    val gitlabGroup: String,
+
+    // BITBUCKET
+    val bitbucketKey: String,
+    val bitbucketSecret: String,
+    val bitbucketWorkspace: String
 ) {
     val githubGraphqlApiUrl: String
         get() = "https://$githubApiHost/graphql"
