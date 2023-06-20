@@ -43,7 +43,7 @@ class GitHubApiService(
     }
 
     override fun getRepositories(token: String?, organization: String): List<Repository> {
-        val client = GraphQLWebClient(url = "https://api.github.com/graphql")
+        val client = GraphQLWebClient(url = propertiesConfiguration.githubGraphqlApiUrl)
         var resultscounter: Int? = 0
         var afterParameter: String? = null
         val repositoriesList = mutableListOf<Repository>()
