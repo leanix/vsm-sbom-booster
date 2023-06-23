@@ -47,7 +47,12 @@ data class PropertiesConfiguration(
     val bitbucketWorkspace: String
 ) {
     val githubGraphqlApiUrl: String
-        get() = "https://$githubApiHost/graphql"
+        get() {
+            if (githubApiHost == "api.github.com") {
+                return "https://$githubApiHost/graphql"
+            }
+            return "https://$githubApiHost/api/graphql"
+        }
 
     val gitlabGraphqlApiUrl: String
         get() = "https://$gitlabApiHost/api/graphql"
