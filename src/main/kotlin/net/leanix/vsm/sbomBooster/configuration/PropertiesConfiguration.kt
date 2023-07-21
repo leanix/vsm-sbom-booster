@@ -13,6 +13,8 @@ data class PropertiesConfiguration(
     val mountedVolume: String,
     @field:NotNull
     val concurrencyFactor: Int,
+    @field:NotNull
+    val analysisTimeout: Long,
 
     // LeanIX configs
     @field:NotBlank

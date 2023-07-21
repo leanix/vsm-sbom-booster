@@ -3,6 +3,7 @@ leanix:
     # Runtime settings
     mounted-volume: ${MOUNTED_VOLUME:}
     concurrency-factor: ${CONCURRENCY_FACTOR:3}
+    analysis-timeout: ${ANALYSIS_TIMEOUT:30}
 
     # LeanIX configs
     leanIx-host: ${LEANIX_HOST:}

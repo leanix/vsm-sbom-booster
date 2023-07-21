@@ -70,6 +70,8 @@ The second `-v` param is the path to temporary folder that the `vsm-sbom-booster
 
 `CONCURRENCY_FACTOR`(optional): The number of parallel jobs `vsm-sbom-booster` will use to generate SBOMs. Note: increasing this number will come at higher compute costs. Default: 3
 
+`ANALYSIS_TIMEOUT`(optional): The timeout, in minutes, that is used to force kill container workers working on analyzing the repository. There are cases that we need to force kill containers with slow progress to free up resources. Default: 30
+
 #### LeanIX configs
 
 `LEANIX_TOKEN`: API token with **ADMIN** rights from your VSM workspace. (see admin > technical users).

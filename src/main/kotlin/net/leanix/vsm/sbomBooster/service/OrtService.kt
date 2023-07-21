@@ -67,7 +67,7 @@ class OrtService(
         analyzeProcessBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
         val analyzeProcess = analyzeProcessBuilder.start()
 
-        analyzeProcess.waitFor(30, TimeUnit.MINUTES)
+        analyzeProcess.waitFor(propertiesConfiguration.analysisTimeout, TimeUnit.MINUTES)
         analyzeProcess.destroy()
     }
 
