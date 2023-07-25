@@ -59,6 +59,27 @@ docker run --pull=always --rm \
 
 2. After a while your mapping inbox should be receiving new discovery items. These will need to be mapped by you once (see our [user documentation](https://docs-vsm.leanix.net/docs/discover-automate#create-your-service-baseline)).
 
+3. Using Docker Compose the container can be run using the following docker-compose.yml file (GitHub provider) :
+
+```console
+version: '3.3'
+services:
+    vsm-sbom-booster:
+        restart: always
+        container_name: vsm-sbom-booster
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - <temp-folder-to-be-used-for-storing-data>:/tempDir
+        environment:
+            - MOUNTED_VOLUME=<temp-folder-to-be-used-for-storing-data>
+            - LEANIX_HOST=<leanix-workspace-host>
+            - LEANIX_TOKEN=<leanix-technical-user-token>
+            - GIT_PROVIDER=GITHUB
+            - GITHUB_TOKEN=<github-token>
+            - GITHUB_ORGANIZATION=<github-organization>
+        image: leanixacrpublic.azurecr.io/vsm-sbom-booster
+```
+
 ### Environment Variables
 
 #### Runtime settings
