@@ -82,7 +82,10 @@ class VsmDiscoveryService(
             )
         } else {
             logger.info("BOM processed. No libraries found for repository ${discoveryItem.projectUrl}")
-            summaryReportService.appendRecord("BOM processed. No libraries found for repository with url: ${discoveryItem.projectUrl} \n")
+            summaryReportService.appendRecord(
+                "BOM processed. No libraries found for repository with url: " +
+                    "${discoveryItem.projectUrl} \n"
+            )
         }
     }
 }
