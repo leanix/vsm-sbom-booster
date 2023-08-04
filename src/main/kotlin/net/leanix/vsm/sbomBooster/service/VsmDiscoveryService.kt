@@ -81,8 +81,8 @@ class VsmDiscoveryService(
                 "Successfully processed repository with url: ${discoveryItem.projectUrl} \n"
             )
         } else {
-            logger.info("No components found in the SBOM file for repository ${discoveryItem.projectUrl}")
-            summaryReportService.appendRecord("Failed to process repository with url: ${discoveryItem.projectUrl} \n")
+            logger.info("BOM processed. No libraries found for repository ${discoveryItem.projectUrl}")
+            summaryReportService.appendRecord("BOM processed. No libraries found for repository with url: ${discoveryItem.projectUrl} \n")
         }
     }
 }
