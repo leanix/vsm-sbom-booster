@@ -15,6 +15,8 @@ data class PropertiesConfiguration(
     val concurrencyFactor: Int,
     @field:NotNull
     val analysisTimeout: Long,
+    @field:NotNull
+    val devMode: Boolean,
 
     // LeanIX configs
     @field:NotBlank
