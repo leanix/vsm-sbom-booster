@@ -2,7 +2,6 @@ package net.leanix.vsm.sbomBooster.service
 
 import net.leanix.vsm.sbomBooster.configuration.PropertiesConfiguration
 import org.springframework.stereotype.Service
-import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Paths
 import java.util.concurrent.TimeUnit
@@ -13,13 +12,6 @@ class OrtService(
 ) {
     companion object {
         private val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
-
-        private fun generateFile(projectUrl: String, phase: String): File {
-            return Paths.get(
-                "tempDir",
-                "${projectUrl.substringAfterLast("/")}_$phase.txt"
-            ).toFile()
-        }
     }
 
     fun pullOrt() {
@@ -51,14 +43,7 @@ class OrtService(
             "-o", "/project/$downloadFolder"
         )
 
-        if (propertiesConfiguration.devMode) {
-            val repoFileName = generateFile(projectUrl, "download")
-
-            FileOutputStream(repoFileName)
-            downloadProcessBuilder.redirectOutput(repoFileName)
-        } else {
-            downloadProcessBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
-        }
+        setupOutput(projectUrl, "download", downloadProcessBuilder)
 
         val downloadProcess = downloadProcessBuilder.start()
 
@@ -81,14 +66,7 @@ class OrtService(
             "-o", "/downloadedProject"
         )
 
-        if (propertiesConfiguration.devMode) {
-            val repoFileName = generateFile(projectUrl, "analyze")
-
-            FileOutputStream(repoFileName)
-            analyzeProcessBuilder.redirectOutput(repoFileName)
-        } else {
-            analyzeProcessBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
-        }
+        setupOutput(projectUrl, "analyze", analyzeProcessBuilder)
 
         val analyzeProcess = analyzeProcessBuilder.start()
 
@@ -111,14 +89,7 @@ class OrtService(
             "-O", "CycloneDx=schema.version=1.4"
         )
 
-        if (propertiesConfiguration.devMode) {
-            val repoFileName = generateFile(projectUrl, "generate_sbom")
-
-            FileOutputStream(repoFileName)
-            generateSbomProcessBuilder.redirectOutput(repoFileName)
-        } else {
-            generateSbomProcessBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
-        }
+        setupOutput(projectUrl, "generate_sbom", generateSbomProcessBuilder)
 
         val generateSbomProcess = generateSbomProcessBuilder.start()
 
@@ -129,5 +100,19 @@ class OrtService(
     fun deleteDownloadedFolder(downloadFolder: String?) {
         val folder = Paths.get("tempDir", downloadFolder).toFile()
         folder.deleteRecursively()
+    }
+
+    private fun setupOutput(projectUrl: String, phase: String, processBuilder: ProcessBuilder) {
+        if (propertiesConfiguration.devMode) {
+            val repoFileName = Paths.get(
+                "tempDir",
+                "${projectUrl.substringAfterLast("/")}_$phase.txt"
+            ).toFile()
+
+            FileOutputStream(repoFileName)
+            processBuilder.redirectOutput(repoFileName)
+        } else {
+            processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
+        }
     }
 }
