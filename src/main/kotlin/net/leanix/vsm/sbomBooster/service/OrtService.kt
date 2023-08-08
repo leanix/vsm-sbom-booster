@@ -2,6 +2,7 @@ package net.leanix.vsm.sbomBooster.service
 
 import net.leanix.vsm.sbomBooster.configuration.PropertiesConfiguration
 import org.springframework.stereotype.Service
+import java.io.FileOutputStream
 import java.nio.file.Paths
 import java.util.concurrent.TimeUnit
 
@@ -42,7 +43,8 @@ class OrtService(
             "-o", "/project/$downloadFolder"
         )
 
-        downloadProcessBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
+        setupOutput(projectUrl, "download", downloadProcessBuilder)
+
         val downloadProcess = downloadProcessBuilder.start()
 
         downloadProcess.waitFor(15, TimeUnit.MINUTES)
@@ -51,7 +53,7 @@ class OrtService(
         return downloadFolder
     }
 
-    fun analyzeProject(downloadFolder: String) {
+    fun analyzeProject(projectUrl: String, downloadFolder: String) {
         val analyzeProcessBuilder = ProcessBuilder(
             "docker", "run", "--rm",
             "-v",
@@ -64,14 +66,15 @@ class OrtService(
             "-o", "/downloadedProject"
         )
 
-        analyzeProcessBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
+        setupOutput(projectUrl, "analyze", analyzeProcessBuilder)
+
         val analyzeProcess = analyzeProcessBuilder.start()
 
         analyzeProcess.waitFor(propertiesConfiguration.analysisTimeout, TimeUnit.MINUTES)
         analyzeProcess.destroy()
     }
 
-    fun generateSbom(downloadFolder: String) {
+    fun generateSbom(projectUrl: String, downloadFolder: String) {
         val generateSbomProcessBuilder = ProcessBuilder(
             "docker", "run", "--rm",
             "-v",
@@ -86,7 +89,8 @@ class OrtService(
             "-O", "CycloneDx=schema.version=1.4"
         )
 
-        generateSbomProcessBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
+        setupOutput(projectUrl, "generate_sbom", generateSbomProcessBuilder)
+
         val generateSbomProcess = generateSbomProcessBuilder.start()
 
         generateSbomProcess.waitFor(10, TimeUnit.MINUTES)
@@ -96,5 +100,19 @@ class OrtService(
     fun deleteDownloadedFolder(downloadFolder: String?) {
         val folder = Paths.get("tempDir", downloadFolder).toFile()
         folder.deleteRecursively()
+    }
+
+    private fun setupOutput(projectUrl: String, phase: String, processBuilder: ProcessBuilder) {
+        if (propertiesConfiguration.devMode) {
+            val repoFileName = Paths.get(
+                "tempDir",
+                "${projectUrl.substringAfterLast("/")}_$phase.txt"
+            ).toFile()
+
+            FileOutputStream(repoFileName)
+            processBuilder.redirectOutput(repoFileName)
+        } else {
+            processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
+        }
     }
 }

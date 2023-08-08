@@ -50,12 +50,12 @@ class ProcessService(
                 )
 
                 logger.info("Beginning to analyze repository with url: ${repository.cloneUrl}")
-                ortService.analyzeProject(downloadedFolder)
+                ortService.analyzeProject(repository.cloneUrl, downloadedFolder)
                 logger.info(
                     "Finished analyzing repository with url: ${repository.cloneUrl} in temp folder $downloadedFolder"
                 )
 
-                ortService.generateSbom(downloadedFolder)
+                ortService.generateSbom(repository.cloneUrl, downloadedFolder)
                 logger.info(
                     "Finished generating SBOM file for repository with url: " +
                         "${repository.cloneUrl} in temp folder $downloadedFolder."
