@@ -1,0 +1,42 @@
+name: Build and Publish ORT Docker Image
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Inject secret store credentials
+        uses: leanix/secrets-action@master
+        with:
+          secret-store-credentials: ${{ secrets.INJECTED_SECRET_STORE_CREDENTIALS }}
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: oss-review-toolkit/ort
+
+      - name: Login to Azure registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ env.ACR_PUBLIC_LOGIN }}
+          username: ${{ env.ACR_PUBLIC_USERNAME }}
+          password: ${{ env.ACR_PUBLIC_PASSWORD }}
+
+      - name: Setup ssh
+        uses: webfactory/ssh-agent@v0.4.1
+        with:
+          ssh-private-key: ${{ env.CI_GITHUB_SSH_PRIVATE_KEY }}
+          ssh-auth-sock: ${{ env.SSH_AUTH_SOCK }}
+
+      - name: Build and push image to Azure public registry
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: Dockerfile
+          tags: ${{ env.ACR_PUBLIC_LOGIN }}/ort:${{ github.sha }}, ${{ env.ACR_PUBLIC_LOGIN }}/ort:latest
+          push: true
+          ssh: default=${{ env.SSH_AUTH_SOCK }}
