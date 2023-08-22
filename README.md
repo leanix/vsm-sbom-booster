@@ -93,7 +93,7 @@ The second `-v` param is the path to temporary folder that the `vsm-sbom-booster
 
 `ANALYSIS_TIMEOUT`(optional): The timeout, in minutes, that is used to force kill container workers working on analyzing the repository. There are cases that we need to force kill containers with slow progress to free up resources. Default: 30
 
-`DEV_MODE`(optional): This is a flag to enable/disable the dev mode. When enabled, all logs from ORT containers will be preserved in the temp folder location. The processing of each repository consists of three separate phases (download, analyze and generate_sbom) that are facilitated by the ORT software. The produced logs are saved in the temp folder using the `<repository_name>_<phase>.txt` naming pattern.This is useful for debugging purposes. Default: false
+`DEV_MODE`(optional): This is a flag to enable/disable the dev mode. When enabled, all logs from ORT containers will be preserved in the temp folder location and the project folders will be retained. Additionally, the logging level for the ORT containers will be set to DEBUG. The processing of each repository consists of three separate phases (download, analyze and generate_sbom) that are facilitated by the ORT software. The produced logs are saved in the temp folder using the `<repository_name>_<phase>.txt` naming pattern.This is useful for debugging purposes. Default: false
 
 #### LeanIX configs
 

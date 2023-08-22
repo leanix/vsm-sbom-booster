@@ -29,7 +29,7 @@ class OrtService(
     }
 
     fun downloadProject(projectUrl: String, username: String, gitToken: String): String {
-        val downloadFolder = "downloaded_${List(10) { charPool.random() }.joinToString("")}"
+        val downloadFolder = "${projectUrl.substringAfterLast("/")}_${List(10) { charPool.random() }.joinToString("")}"
 
         val downloadProcessBuilder = ProcessBuilder(
             "docker",
@@ -38,6 +38,7 @@ class OrtService(
             "-e", "ORT_HTTP_PASSWORD=$gitToken",
             "-v", "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}:/project",
             "leanixacrpublic.azurecr.io/ort",
+            loggingParameter(),
             "download",
             "--project-url", projectUrl,
             "-o", "/project/$downloadFolder"
@@ -60,6 +61,7 @@ class OrtService(
             "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}" +
                 "/$downloadFolder:/downloadedProject",
             "leanixacrpublic.azurecr.io/ort",
+            loggingParameter(),
             "-P", "ort.analyzer.allowDynamicVersions=true",
             "analyze",
             "-i", "/downloadedProject",
@@ -81,6 +83,7 @@ class OrtService(
             "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}" +
                 "/$downloadFolder:/downloadedProject",
             "leanixacrpublic.azurecr.io/ort",
+            loggingParameter(),
             "report",
             "-f", "CycloneDX",
             "-i", "/downloadedProject/analyzer-result.yml",
@@ -113,6 +116,14 @@ class OrtService(
             processBuilder.redirectOutput(repoFileName)
         } else {
             processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
+        }
+    }
+
+    private fun loggingParameter(): String {
+        return if (propertiesConfiguration.devMode) {
+            "--debug"
+        } else {
+            "--warn"
         }
     }
 }
