@@ -83,8 +83,11 @@ class ProcessService(
             } catch (e: Exception) {
                 logger.error(e.message)
             } finally {
-                ortService.deleteDownloadedFolder(downloadedFolder)
-                logger.info("Finished deleting temp folder $downloadedFolder.")
+                if (!propertiesConfiguration.devMode) {
+                    logger.info("Beginning to delete folder $downloadedFolder.")
+                    ortService.deleteDownloadedFolder(downloadedFolder)
+                    logger.info("Finished deleting temp folder $downloadedFolder.")
+                }
             }
         }
 
