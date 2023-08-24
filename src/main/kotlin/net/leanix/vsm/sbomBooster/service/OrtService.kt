@@ -54,9 +54,15 @@ class OrtService(
         return downloadFolder
     }
 
-    fun analyzeProject(projectUrl: String, downloadFolder: String) {
+    fun analyzeProject(projectUrl: String, downloadFolder: String): String {
+
+        val ortFolder = "${projectUrl.substringAfterLast("/")}_ORT_produced_files"
+
         val analyzeProcessBuilder = ProcessBuilder(
             "docker", "run", "--rm",
+            "-v",
+            "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}" +
+                "/$ortFolder:/ortProject",
             "-v",
             "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}" +
                 "/$downloadFolder:/downloadedProject",
@@ -65,7 +71,7 @@ class OrtService(
             "-P", "ort.analyzer.allowDynamicVersions=true",
             "analyze",
             "-i", "/downloadedProject",
-            "-o", "/downloadedProject"
+            "-o", "/ortProject"
         )
 
         setupOutput(projectUrl, "analyze", analyzeProcessBuilder)
@@ -74,20 +80,22 @@ class OrtService(
 
         analyzeProcess.waitFor(propertiesConfiguration.analysisTimeout, TimeUnit.MINUTES)
         analyzeProcess.destroy()
+
+        return ortFolder
     }
 
-    fun generateSbom(projectUrl: String, downloadFolder: String) {
+    fun generateSbom(projectUrl: String) {
         val generateSbomProcessBuilder = ProcessBuilder(
             "docker", "run", "--rm",
             "-v",
             "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}" +
-                "/$downloadFolder:/downloadedProject",
+                "/${projectUrl.substringAfterLast("/")}_ORT_produced_files:/ortProject",
             "leanixacrpublic.azurecr.io/ort",
             loggingParameter(),
             "report",
             "-f", "CycloneDX",
-            "-i", "/downloadedProject/analyzer-result.yml",
-            "-o", "/downloadedProject",
+            "-i", "/ortProject/analyzer-result.yml",
+            "-o", "/ortProject",
             "-O", "CycloneDx=output.file.formats=json",
             "-O", "CycloneDx=schema.version=1.4"
         )
@@ -109,7 +117,7 @@ class OrtService(
         if (propertiesConfiguration.devMode) {
             val repoFileName = Paths.get(
                 "tempDir",
-                "${projectUrl.substringAfterLast("/")}_$phase.txt"
+                "${projectUrl.substringAfterLast("/")}_${phase}_log.txt"
             ).toFile()
 
             FileOutputStream(repoFileName)

@@ -29,6 +29,7 @@ class ProcessService(
     }
 
     @Async
+    @Suppress("LongMethod")
     fun processRepository(
         propertiesConfiguration: PropertiesConfiguration,
         username: String,
@@ -37,6 +38,7 @@ class ProcessService(
     ) {
         val startInstant = Instant.now()
         var downloadedFolder: String? = null
+        var ortFolder: String? = null
         if (username.isNotBlank()) {
             try {
                 logger.info("Beginning to download repository with url: ${repository.cloneUrl}")
@@ -50,15 +52,15 @@ class ProcessService(
                 )
 
                 logger.info("Beginning to analyze repository with url: ${repository.cloneUrl}")
-                ortService.analyzeProject(repository.cloneUrl, downloadedFolder)
+                ortFolder = ortService.analyzeProject(repository.cloneUrl, downloadedFolder)
                 logger.info(
-                    "Finished analyzing repository with url: ${repository.cloneUrl} in temp folder $downloadedFolder"
+                    "Finished analyzing repository with url: ${repository.cloneUrl} in temp folder $ortFolder"
                 )
 
-                ortService.generateSbom(repository.cloneUrl, downloadedFolder)
+                ortService.generateSbom(repository.cloneUrl)
                 logger.info(
                     "Finished generating SBOM file for repository with url: " +
-                        "${repository.cloneUrl} in temp folder $downloadedFolder."
+                        "${repository.cloneUrl} in temp folder $ortFolder."
                 )
 
                 val accessToken = mtMService.getAccessToken(
@@ -73,7 +75,7 @@ class ProcessService(
                     vsmRegion,
                     VsmDiscoveryItem(
                         repository.cloneUrl,
-                        downloadedFolder,
+                        ortFolder,
                         repository.sourceType,
                         repository.sourceInstance,
                         repository.name,
@@ -83,10 +85,14 @@ class ProcessService(
             } catch (e: Exception) {
                 logger.error(e.message)
             } finally {
+                logger.info("Beginning to delete folder $downloadedFolder.")
+                ortService.deleteDownloadedFolder(downloadedFolder)
+                logger.info("Finished deleting temp folder $downloadedFolder.")
+
                 if (!propertiesConfiguration.devMode) {
-                    logger.info("Beginning to delete folder $downloadedFolder.")
-                    ortService.deleteDownloadedFolder(downloadedFolder)
-                    logger.info("Finished deleting temp folder $downloadedFolder.")
+                    logger.info("Beginning to delete folder $ortFolder.")
+                    ortService.deleteDownloadedFolder(ortFolder)
+                    logger.info("Finished deleting temp folder $ortFolder.")
                 }
             }
         }
