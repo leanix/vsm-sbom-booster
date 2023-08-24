@@ -48,13 +48,13 @@ class VsmDiscoveryService(
 
         val sbomFile: Resource = FileSystemResource(
             "${Paths.get("tempDir").toAbsolutePath()}" +
-                "/${discoveryItem.downloadedFolder}/bom.cyclonedx.json"
+                "/${discoveryItem.ortFolder}/bom.cyclonedx.json"
         )
 
         val sbomByteArray = Files.readAllBytes(
             Paths.get(
                 "tempDir",
-                discoveryItem.downloadedFolder,
+                discoveryItem.ortFolder,
                 "bom.cyclonedx.json"
             )
         )
