@@ -152,7 +152,7 @@ Today, the prototype only supports to scan GitHub Cloud and GitHub Enterprise. W
 We also encourage contributions to extend this prototype to be able to run when package manager files changes, to bring it closer the real build. 
 
 ### Support of ORT configuration files
-The `vsm-sbom-booster` supports the ORT configuration files if they are present in the `MOUNTED_VOLUME` under the `config` folder. The `config` folder is used as the value of the `ORT_CONFIG_DIR` environmentanl variable as described [here](https://github.com/oss-review-toolkit/ort#environment-variables). For more details on the ORT configuration files, please refer to the [ORT documentation](https://github.com/oss-review-toolkit/ort#configuration-files).
+The `vsm-sbom-booster` supports the ORT configuration files if they are present in the `MOUNTED_VOLUME` under the `config` folder. The `config` folder is used as the value of the `ORT_CONFIG_DIR` environmental variable as described [here](https://github.com/oss-review-toolkit/ort#environment-variables). For more details on the ORT configuration files, please refer to the [ORT documentation](https://github.com/oss-review-toolkit/ort#configuration-files).
 
 ### Supported Package Managers
 
