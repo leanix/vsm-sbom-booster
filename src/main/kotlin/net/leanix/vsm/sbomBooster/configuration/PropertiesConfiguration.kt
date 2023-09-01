@@ -17,6 +17,8 @@ data class PropertiesConfiguration(
     val analysisTimeout: Long,
     @field:NotNull
     val devMode: Boolean,
+    val httpProxy: String?,
+    val httpsProxy: String?,
 
     // LeanIX configs
     @field:NotBlank

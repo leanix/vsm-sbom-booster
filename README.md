@@ -95,6 +95,10 @@ The second `-v` param is the path to temporary folder that the `vsm-sbom-booster
 
 `DEV_MODE`(optional): This is a flag to enable/disable the dev mode. When enabled, all logs from ORT containers will be preserved in the temp folder location and the ORT project folders will be retained. Additionally, the logging level for the ORT containers will be set to DEBUG. The processing of each repository consists of three separate phases (download, analyze and generate_sbom) that are facilitated by the ORT software. The produced logs are saved in the temp folder using the `<repository_name>_<phase>_log.txt` naming pattern.This is useful for debugging purposes. Default: false
 
+`HTTP_PROXY`: (optional): The HTTP proxy to use for the ORT container (See https://github.com/oss-review-toolkit/ort#environment-variables). Default: none
+
+`HTTPS_PROXY`: (optional): The HTTPS proxy to use for the ORT container (See https://github.com/oss-review-toolkit/ort#environment-variables). Default: none
+
 #### LeanIX configs
 
 `LEANIX_TOKEN`: API token with **ADMIN** rights from your VSM workspace. (see admin > technical users).
@@ -113,7 +117,7 @@ The second `-v` param is the path to temporary folder that the `vsm-sbom-booster
 
 #### GITHUB (only if `GIT_PROVIDER` is `GITHUB`)
 
-`GITHUB_TOKEN`: The [Personal Access Token](https://github.com/leanix/vsm-github-broker#personal-access-token) with `read:org` scope. 
+`GITHUB_TOKEN`: The [Personal Access Token](https://github.com/leanix/vsm-github-broker#personal-access-token) with `read:org` and `repo` scopes. 
 
 `GITHUB_ORGANIZATION`: The GitHub organization name which `vsm-sbom-booster` shall scan and try to generate the SBOMs for.
 
@@ -146,6 +150,9 @@ Also, currently the prototype does not filter out any repositories that evidentl
 Today, the prototype only supports to scan GitHub Cloud and GitHub Enterprise. We are open to contribution to extend the functionality to other Git Providers. The prototype only needs the list of repository URLs as input and is otherwise Git Provider agnostic.
 
 We also encourage contributions to extend this prototype to be able to run when package manager files changes, to bring it closer the real build. 
+
+### Support of ORT configuration files
+The `vsm-sbom-booster` supports the ORT configuration files if they are present in the `MOUNTED_VOLUME` under the `config` folder. The `config` folder is used as the value of the `ORT_CONFIG_DIR` as described [here](https://github.com/oss-review-toolkit/ort#environment-variables). For more details on the ORT configuration files, please refer to the [ORT documentation](https://github.com/oss-review-toolkit/ort#configuration-files).
 
 ### Supported Package Managers
 
