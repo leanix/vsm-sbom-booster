@@ -1,6 +1,8 @@
 package net.leanix.vsm.sbomBooster.service
 
 import net.leanix.vsm.sbomBooster.configuration.PropertiesConfiguration
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.io.FileOutputStream
 import java.nio.file.Paths
@@ -12,6 +14,7 @@ class OrtService(
 ) {
     companion object {
         private val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
+        private val logger: Logger = LoggerFactory.getLogger(OrtService::class.java)
     }
 
     fun pullOrt() {
@@ -30,19 +33,26 @@ class OrtService(
 
     fun downloadProject(projectUrl: String, username: String, gitToken: String): String {
         val downloadFolder = "${projectUrl.substringAfterLast("/")}_${List(10) { charPool.random() }.joinToString("")}"
-
-        val downloadProcessBuilder = ProcessBuilder(
+        val args = mutableListOf(
             "docker",
             "run", "--rm",
             "-e", "ORT_HTTP_USERNAME=$username",
             "-e", "ORT_HTTP_PASSWORD=$gitToken",
             "-v", "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}:/project",
+            "-e", "ORT_CONFIG_DIR=/project/config"
+        )
+
+        addProxyEnvValues(args)
+        val ortArgs = mutableListOf(
             "leanixacrpublic.azurecr.io/ort",
             loggingParameter(),
             "download",
             "--project-url", projectUrl,
             "-o", "/project/$downloadFolder"
         )
+        addOrtArgs(args, ortArgs)
+
+        val downloadProcessBuilder = ProcessBuilder(args)
 
         setupOutput(projectUrl, "download", downloadProcessBuilder)
 
@@ -58,21 +68,35 @@ class OrtService(
 
         val ortFolder = "${projectUrl.substringAfterLast("/")}_ORT_produced_files"
 
-        val analyzeProcessBuilder = ProcessBuilder(
+        val args = mutableListOf(
             "docker", "run", "--rm",
+            "-v",
+            "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}" +
+                "/config:/config",
             "-v",
             "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}" +
                 "/$ortFolder:/ortProject",
             "-v",
             "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}" +
                 "/$downloadFolder:/downloadedProject",
+            "-e", "ORT_CONFIG_DIR=/config",
+        )
+
+        addProxyEnvValues(args)
+
+        val ortArgs = mutableListOf(
             "leanixacrpublic.azurecr.io/ort",
             loggingParameter(),
-            "-P", "ort.analyzer.allowDynamicVersions=true",
             "analyze",
             "-i", "/downloadedProject",
             "-o", "/ortProject"
         )
+
+        addOrtArgs(args, ortArgs)
+
+        logger.info("Running analyze command with the following arguments: $args")
+
+        val analyzeProcessBuilder = ProcessBuilder(args)
 
         setupOutput(projectUrl, "analyze", analyzeProcessBuilder)
 
@@ -85,11 +109,19 @@ class OrtService(
     }
 
     fun generateSbom(projectUrl: String) {
-        val generateSbomProcessBuilder = ProcessBuilder(
+        val args = mutableListOf(
             "docker", "run", "--rm",
             "-v",
             "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}" +
+                "/config:/config",
+            "-v",
+            "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}" +
                 "/${projectUrl.substringAfterLast("/")}_ORT_produced_files:/ortProject",
+            "-e", "ORT_CONFIG_DIR=/config",
+        )
+
+        addProxyEnvValues(args)
+        val ortArgs = mutableListOf(
             "leanixacrpublic.azurecr.io/ort",
             loggingParameter(),
             "report",
@@ -99,6 +131,10 @@ class OrtService(
             "-O", "CycloneDx=output.file.formats=json",
             "-O", "CycloneDx=schema.version=1.4"
         )
+
+        addOrtArgs(args, ortArgs)
+
+        val generateSbomProcessBuilder = ProcessBuilder(args)
 
         setupOutput(projectUrl, "generate_sbom", generateSbomProcessBuilder)
 
@@ -132,6 +168,24 @@ class OrtService(
             "--debug"
         } else {
             "--warn"
+        }
+    }
+
+    private fun addProxyEnvValues(args: MutableList<String>) {
+        if (propertiesConfiguration.httpProxy != "") {
+            args.add("-e")
+            args.add("http_proxy=${propertiesConfiguration.httpProxy}")
+        }
+
+        if (propertiesConfiguration.httpsProxy != "") {
+            args.add("-e")
+            args.add("https_proxy=${propertiesConfiguration.httpsProxy}")
+        }
+    }
+
+    private fun addOrtArgs(args: MutableList<String>, ortArgs: MutableList<String>) {
+        ortArgs.forEach {
+            args.add(it)
         }
     }
 }
