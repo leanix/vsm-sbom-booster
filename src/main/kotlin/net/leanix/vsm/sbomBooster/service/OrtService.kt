@@ -34,7 +34,7 @@ class OrtService(
     fun downloadProject(projectUrl: String, username: String, gitToken: String): String {
         val downloadFolder = "${projectUrl.substringAfterLast("/")}_${List(10) { charPool.random() }.joinToString("")}"
         val args = mutableListOf(
-            "docker",
+            "sudo", "docker",
             "run", "--rm",
             "-e", "ORT_HTTP_USERNAME=$username",
             "-e", "ORT_HTTP_PASSWORD=$gitToken",
@@ -69,7 +69,7 @@ class OrtService(
         val ortFolder = "${projectUrl.substringAfterLast("/")}_ORT_produced_files"
 
         val args = mutableListOf(
-            "docker", "run", "--rm",
+            "sudo", "docker", "run", "--rm",
             "-v",
             "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}" +
                 "/config:/config",
@@ -110,7 +110,7 @@ class OrtService(
 
     fun generateSbom(projectUrl: String) {
         val args = mutableListOf(
-            "docker", "run", "--rm",
+            "sudo", "docker", "run", "--rm",
             "-v",
             "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}" +
                 "/config:/config",
