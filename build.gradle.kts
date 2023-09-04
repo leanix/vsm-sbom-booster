@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "net.leanix"
-version = "v1.1.7"
+version = "v1.1.8"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
