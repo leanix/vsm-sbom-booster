@@ -34,7 +34,7 @@ class OrtService(
     fun downloadProject(projectUrl: String, username: String, gitToken: String): String {
         val downloadFolder = "${projectUrl.substringAfterLast("/")}_${List(10) { charPool.random() }.joinToString("")}"
         val args = mutableListOf(
-            "sudo", "docker",
+            "docker",
             "run", "--rm",
             "-e", "ORT_HTTP_USERNAME=$username",
             "-e", "ORT_HTTP_PASSWORD=$gitToken",
@@ -69,17 +69,9 @@ class OrtService(
         val ortFolder = "${projectUrl.substringAfterLast("/")}_ORT_produced_files"
 
         val args = mutableListOf(
-            "sudo", "docker", "run", "--rm",
-            "-v",
-            "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}" +
-                "/config:/config",
-            "-v",
-            "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}" +
-                "/$ortFolder:/ortProject",
-            "-v",
-            "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}" +
-                "/$downloadFolder:/downloadedProject",
-            "-e", "ORT_CONFIG_DIR=/config",
+            "docker", "run", "--rm",
+            "-v", "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}:/project",
+            "-e", "ORT_CONFIG_DIR=/project/config",
         )
 
         addProxyEnvValues(args)
@@ -88,8 +80,8 @@ class OrtService(
             "leanixacrpublic.azurecr.io/ort",
             loggingParameter(),
             "analyze",
-            "-i", "/downloadedProject",
-            "-o", "/ortProject"
+            "-i", "/project/$downloadFolder",
+            "-o", "/project/$ortFolder",
         )
 
         addOrtArgs(args, ortArgs)
@@ -110,14 +102,9 @@ class OrtService(
 
     fun generateSbom(projectUrl: String) {
         val args = mutableListOf(
-            "sudo", "docker", "run", "--rm",
-            "-v",
-            "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}" +
-                "/config:/config",
-            "-v",
-            "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}" +
-                "/${projectUrl.substringAfterLast("/")}_ORT_produced_files:/ortProject",
-            "-e", "ORT_CONFIG_DIR=/config",
+            "docker", "run", "--rm",
+            "-v", "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}:/project",
+            "-e", "ORT_CONFIG_DIR=/project/config",
         )
 
         addProxyEnvValues(args)
@@ -126,8 +113,8 @@ class OrtService(
             loggingParameter(),
             "report",
             "-f", "CycloneDX",
-            "-i", "/ortProject/analyzer-result.yml",
-            "-o", "/ortProject",
+            "-i", "/project/${projectUrl.substringAfterLast("/")}_ORT_produced_files/analyzer-result.yml",
+            "-o", "/project/${projectUrl.substringAfterLast("/")}_ORT_produced_files",
             "-O", "CycloneDx=output.file.formats=json",
             "-O", "CycloneDx=schema.version=1.4"
         )
