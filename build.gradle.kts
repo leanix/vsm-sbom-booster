@@ -69,3 +69,4 @@ detekt {
 	}
 }
 
+ext["snakeyaml.version"] = "2.2"
