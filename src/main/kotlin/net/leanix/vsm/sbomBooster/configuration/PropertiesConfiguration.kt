@@ -19,6 +19,8 @@ data class PropertiesConfiguration(
     val devMode: Boolean,
     val httpProxy: String?,
     val httpsProxy: String?,
+    @field:NotNull
+    val allowNoComponentSboms: Boolean,
 
     // LeanIX configs
     @field:NotBlank
