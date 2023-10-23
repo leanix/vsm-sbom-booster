@@ -35,18 +35,30 @@ class VsmDiscoveryService(
         region: String,
         discoveryItem: VsmDiscoveryItem
     ) {
+        val containsComponents = bomContainsComponents(discoveryItem)
+
         if (propertiesConfiguration.allowNoComponentSboms) {
-            submitSbom(leanIxToken, discoveryItem, region)
+            submitSbom(leanIxToken, discoveryItem, region, containsComponents)
         } else {
-            submitSbomBasedOnComponents(discoveryItem, leanIxToken, region)
+            submitSbomBasedOnComponents(discoveryItem, leanIxToken, region, containsComponents)
         }
     }
 
     private fun submitSbomBasedOnComponents(
         discoveryItem: VsmDiscoveryItem,
         leanIxToken: String,
-        region: String
+        region: String,
+        containsComponents: Boolean
     ) {
+        if (containsComponents) {
+            submitSbom(leanIxToken, discoveryItem, region, containsComponents)
+        } else {
+            logger.info("No components found in the SBOM file for repository ${discoveryItem.projectUrl}")
+            summaryReportService.appendRecord("Failed to process repository with url: ${discoveryItem.projectUrl} \n")
+        }
+    }
+
+    private fun bomContainsComponents(discoveryItem: VsmDiscoveryItem): Boolean {
         val sbomByteArray = Files.readAllBytes(
             Paths.get(
                 "tempDir",
@@ -58,18 +70,14 @@ class VsmDiscoveryService(
         val parser = BomParserFactory.createParser(sbomByteArray)
 
         val bom = parser.parse(sbomByteArray)
-        if (!bom.components.isNullOrEmpty()) {
-            submitSbom(leanIxToken, discoveryItem, region)
-        } else {
-            logger.info("No components found in the SBOM file for repository ${discoveryItem.projectUrl}")
-            summaryReportService.appendRecord("Failed to process repository with url: ${discoveryItem.projectUrl} \n")
-        }
+        return !bom.components.isNullOrEmpty()
     }
 
     private fun submitSbom(
         leanIxToken: String,
         discoveryItem: VsmDiscoveryItem,
-        region: String
+        region: String,
+        containsComponents: Boolean
     ) {
         val headers = HttpHeaders()
         headers.contentType = MediaType.MULTIPART_FORM_DATA
@@ -102,8 +110,15 @@ class VsmDiscoveryService(
 
         logger.info("Response received from VSM: $responseEntity")
         VsmSbomBoosterApplication.counter.getAndIncrement()
-        summaryReportService.appendRecord(
-            "Successfully processed repository with url: ${discoveryItem.projectUrl} \n"
-        )
+        if (containsComponents) {
+            summaryReportService
+                .appendRecord("Successfully processed repository with url: ${discoveryItem.projectUrl} \n")
+        } else {
+            summaryReportService
+                .appendRecord(
+                    "Successfully processed repository with url: " +
+                        "${discoveryItem.projectUrl} with zero components\n"
+                )
+        }
     }
 }

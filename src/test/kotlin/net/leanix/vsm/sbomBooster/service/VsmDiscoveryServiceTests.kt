@@ -48,7 +48,7 @@ class VsmDiscoveryServiceTests {
     }
 
     @Test
-    fun `When allowNoComponentSboms is true sbom is submitted`() {
+    fun `When allowNoComponentSboms is true sbom is submitted when components are present`() {
         every { propertiesConfiguration.allowNoComponentSboms } returns true
         val vsmDiscoveryService = VsmDiscoveryService(summaryReportService, propertiesConfiguration, restTemplate)
 
@@ -63,6 +63,21 @@ class VsmDiscoveryServiceTests {
 
         verify(exactly = 1) {
             summaryReportService.appendRecord("Successfully processed repository with url: projectUrl \n")
+        }
+    }
+
+    @Test
+    fun `When allowNoComponentSboms is true sbom is submitted when components are not present`() {
+        every { propertiesConfiguration.allowNoComponentSboms } returns true
+        val vsmDiscoveryService = VsmDiscoveryService(summaryReportService, propertiesConfiguration, restTemplate)
+
+        every { bom.components } returns listOf()
+
+        vsmDiscoveryService.sendToVsm("token", "region", vsmDiscoveryItem)
+
+        verify(exactly = 1) {
+            summaryReportService
+                .appendRecord("Successfully processed repository with url: projectUrl with zero components\n")
         }
     }
 
