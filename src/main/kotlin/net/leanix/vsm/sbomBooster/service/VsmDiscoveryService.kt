@@ -1,6 +1,7 @@
 package net.leanix.vsm.sbomBooster.service
 
 import net.leanix.vsm.sbomBooster.VsmSbomBoosterApplication
+import net.leanix.vsm.sbomBooster.configuration.PropertiesConfiguration
 import net.leanix.vsm.sbomBooster.domain.VsmDiscoveryItem
 import org.cyclonedx.BomParserFactory
 import org.slf4j.Logger
@@ -19,7 +20,9 @@ import java.nio.file.Paths
 
 @Service
 class VsmDiscoveryService(
-    private val summaryReportService: SummaryReportService
+    private val summaryReportService: SummaryReportService,
+    private val propertiesConfiguration: PropertiesConfiguration,
+    private val restTemplate: RestTemplate
 ) {
 
     companion object {
@@ -32,7 +35,50 @@ class VsmDiscoveryService(
         region: String,
         discoveryItem: VsmDiscoveryItem
     ) {
-        val restTemplate = RestTemplate()
+        val containsComponents = bomContainsComponents(discoveryItem)
+
+        if (propertiesConfiguration.allowNoComponentSboms) {
+            submitSbom(leanIxToken, discoveryItem, region, containsComponents)
+        } else {
+            submitSbomBasedOnComponents(discoveryItem, leanIxToken, region, containsComponents)
+        }
+    }
+
+    private fun submitSbomBasedOnComponents(
+        discoveryItem: VsmDiscoveryItem,
+        leanIxToken: String,
+        region: String,
+        containsComponents: Boolean
+    ) {
+        if (containsComponents) {
+            submitSbom(leanIxToken, discoveryItem, region, containsComponents)
+        } else {
+            logger.info("No components found in the SBOM file for repository ${discoveryItem.projectUrl}")
+            summaryReportService.appendRecord("Failed to process repository with url: ${discoveryItem.projectUrl} \n")
+        }
+    }
+
+    private fun bomContainsComponents(discoveryItem: VsmDiscoveryItem): Boolean {
+        val sbomByteArray = Files.readAllBytes(
+            Paths.get(
+                "tempDir",
+                discoveryItem.ortFolder,
+                "bom.cyclonedx.json"
+            )
+        )
+
+        val parser = BomParserFactory.createParser(sbomByteArray)
+
+        val bom = parser.parse(sbomByteArray)
+        return !bom.components.isNullOrEmpty()
+    }
+
+    private fun submitSbom(
+        leanIxToken: String,
+        discoveryItem: VsmDiscoveryItem,
+        region: String,
+        containsComponents: Boolean
+    ) {
         val headers = HttpHeaders()
         headers.contentType = MediaType.MULTIPART_FORM_DATA
         headers.set("Authorization", "Bearer $leanIxToken")
@@ -51,38 +97,28 @@ class VsmDiscoveryService(
                 "/${discoveryItem.ortFolder}/bom.cyclonedx.json"
         )
 
-        val sbomByteArray = Files.readAllBytes(
-            Paths.get(
-                "tempDir",
-                discoveryItem.ortFolder,
-                "bom.cyclonedx.json"
-            )
+        multipartBodyBuilder.part("bom", sbomFile, MediaType.APPLICATION_JSON)
+
+        val multipartBody: MultiValueMap<String, HttpEntity<*>> = multipartBodyBuilder.build()
+
+        val httpEntity: HttpEntity<MultiValueMap<String, HttpEntity<*>>> = HttpEntity(multipartBody, headers)
+
+        val responseEntity = restTemplate.postForEntity(
+            "https://$region-vsm.leanix.net/services/vsm/discovery/v1/service", httpEntity,
+            String::class.java
         )
 
-        val parser = BomParserFactory.createParser(sbomByteArray)
-
-        val bom = parser.parse(sbomByteArray)
-
-        if (!bom.components.isNullOrEmpty()) {
-            multipartBodyBuilder.part("bom", sbomFile, MediaType.APPLICATION_JSON)
-
-            val multipartBody: MultiValueMap<String, HttpEntity<*>> = multipartBodyBuilder.build()
-
-            val httpEntity: HttpEntity<MultiValueMap<String, HttpEntity<*>>> = HttpEntity(multipartBody, headers)
-
-            val responseEntity = restTemplate.postForEntity(
-                "https://$region-vsm.leanix.net/services/vsm/discovery/v1/service", httpEntity,
-                String::class.java
-            )
-
-            logger.info("Response received from VSM: $responseEntity")
-            VsmSbomBoosterApplication.counter.getAndIncrement()
-            summaryReportService.appendRecord(
-                "Successfully processed repository with url: ${discoveryItem.projectUrl} \n"
-            )
+        logger.info("Response received from VSM: $responseEntity")
+        VsmSbomBoosterApplication.counter.getAndIncrement()
+        if (containsComponents) {
+            summaryReportService
+                .appendRecord("Successfully processed repository with url: ${discoveryItem.projectUrl} \n")
         } else {
-            logger.info("No components found in the SBOM file for repository ${discoveryItem.projectUrl}")
-            summaryReportService.appendRecord("Failed to process repository with url: ${discoveryItem.projectUrl} \n")
+            summaryReportService
+                .appendRecord(
+                    "Successfully processed repository with url: " +
+                        "${discoveryItem.projectUrl} with zero components\n"
+                )
         }
     }
 }
