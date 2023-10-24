@@ -7,6 +7,7 @@ leanix:
     dev-mode: ${DEV_MODE:false}
     http-proxy: ${HTTP_PROXY:}
     https-proxy: ${HTTPS_PROXY:}
+    ort-image: ${ORT_IMAGE:leanixacrpublic.azurecr.io/ort}
     allow-no-component-sboms: ${ALLOW_NO_COMPONENT_SBOMS:false}
 
     # LeanIX configs
@@ -24,6 +25,7 @@ leanix:
     github-api-host: ${GITHUB_API_HOST:api.github.com}
     github-token: ${GITHUB_TOKEN:}
     github-organization: ${GITHUB_ORGANIZATION:}
+    github-dependency-graph: ${GITHUB_DEPENDENCY_GRAPH:true}
 
     ## GITLAB
     gitlab-api-host: ${GITLAB_API_HOST:gitlab.com}
