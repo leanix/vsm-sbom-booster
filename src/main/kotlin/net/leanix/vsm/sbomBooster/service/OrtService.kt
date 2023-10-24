@@ -13,7 +13,6 @@ class OrtService(
     private val propertiesConfiguration: PropertiesConfiguration
 ) {
     companion object {
-        private val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
         private val logger: Logger = LoggerFactory.getLogger(OrtService::class.java)
     }
 
@@ -21,7 +20,7 @@ class OrtService(
         val pullOrtProcessBuilder = ProcessBuilder(
             "docker",
             "pull",
-            "leanixacrpublic.azurecr.io/ort"
+            propertiesConfiguration.ortImage
         )
 
         pullOrtProcessBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
@@ -31,8 +30,7 @@ class OrtService(
         downloadProcess.destroy()
     }
 
-    fun downloadProject(projectUrl: String, username: String, gitToken: String): String {
-        val downloadFolder = "${projectUrl.substringAfterLast("/")}_${List(10) { charPool.random() }.joinToString("")}"
+    fun downloadProject(projectUrl: String, username: String, gitToken: String, downloadFolder: String): String {
         val args = mutableListOf(
             "docker",
             "run", "--rm",
@@ -44,7 +42,7 @@ class OrtService(
 
         addProxyEnvValues(args)
         val ortArgs = mutableListOf(
-            "leanixacrpublic.azurecr.io/ort",
+            propertiesConfiguration.ortImage,
             loggingParameter(),
             "download",
             "--project-url", projectUrl,
@@ -77,7 +75,7 @@ class OrtService(
         addProxyEnvValues(args)
 
         val ortArgs = mutableListOf(
-            "leanixacrpublic.azurecr.io/ort",
+            propertiesConfiguration.ortImage,
             loggingParameter(),
             "analyze",
             "-i", "/project/$downloadFolder",
@@ -109,7 +107,7 @@ class OrtService(
 
         addProxyEnvValues(args)
         val ortArgs = mutableListOf(
-            "leanixacrpublic.azurecr.io/ort",
+            propertiesConfiguration.ortImage,
             loggingParameter(),
             "report",
             "-f", "CycloneDX",
@@ -129,11 +127,6 @@ class OrtService(
 
         generateSbomProcess.waitFor(10, TimeUnit.MINUTES)
         generateSbomProcess.destroy()
-    }
-
-    fun deleteDownloadedFolder(downloadFolder: String?) {
-        val folder = Paths.get("tempDir", downloadFolder).toFile()
-        folder.deleteRecursively()
     }
 
     private fun setupOutput(projectUrl: String, phase: String, processBuilder: ProcessBuilder) {

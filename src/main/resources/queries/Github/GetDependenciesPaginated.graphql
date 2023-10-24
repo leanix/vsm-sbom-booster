@@ -1,0 +1,24 @@
+query GetDependenciesPaginated($name: String!, $owner: String!, $first: Int!, $manifestCursor: String, $dependencyCursor: String) {
+  repository(name: $name, owner: $owner) {
+    dependencyGraphManifests(first: 1, after: $manifestCursor) {
+      nodes {
+        filename
+        dependencies(first: $first, after: $dependencyCursor) {
+          nodes {
+            packageManager
+            packageName
+            requirements
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}

@@ -20,6 +20,7 @@ data class PropertiesConfiguration(
     val httpProxy: String?,
     val httpsProxy: String?,
     val allowNoComponentSboms: Boolean = true,
+    val ortImage: String,
 
     // LeanIX configs
     @field:NotBlank
@@ -41,6 +42,7 @@ data class PropertiesConfiguration(
     val githubApiHost: String,
     val githubToken: String,
     val githubOrganization: String,
+    val githubDependencyGraph: Boolean,
 
     // GITLAB
     @field:NotBlank

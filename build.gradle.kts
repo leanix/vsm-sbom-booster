@@ -27,6 +27,8 @@ dependencies {
 	implementation("org.reactivestreams:reactive-streams:1.0.4")
 	implementation("com.expediagroup:graphql-kotlin-spring-client:6.2.2")
 	implementation("org.cyclonedx:cyclonedx-core-java:7.2.0")
+	implementation("com.github.package-url:packageurl-java:1.4.1")
+	implementation("org.cyclonedx:cyclonedx-core-java:8.0.1")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.mockk:mockk:1.13.8")
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
@@ -57,7 +59,8 @@ val graphqlGenerateGithubClient by tasks.creating(GraphQLGenerateClientTask::cla
 	schemaFile.set(file("${project.projectDir}/src/main/resources/schemas/github_schema.graphql"))
 	queryFiles.from(
 		"${project.projectDir}/src/main/resources/queries/Github/GetUsername.graphql",
-		"${project.projectDir}/src/main/resources/queries/Github/GetRepositoriesPaginated.graphql"
+		"${project.projectDir}/src/main/resources/queries/Github/GetRepositoriesPaginated.graphql",
+		"${project.projectDir}/src/main/resources/queries/Github/GetDependenciesPaginated.graphql"
 	)
 }
 

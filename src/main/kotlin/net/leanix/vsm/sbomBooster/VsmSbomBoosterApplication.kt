@@ -42,6 +42,7 @@ class VsmSbomBoosterApplication(
         )
         summaryReportService.appendRecord("MOUNTED_VOLUME: ${propertiesConfiguration.mountedVolume}\n")
         summaryReportService.appendRecord("CONCURRENCY_FACTOR: ${propertiesConfiguration.concurrencyFactor}\n\n")
+        summaryReportService.appendRecord("ORT_IMAGE: ${propertiesConfiguration.ortImage}\n\n")
 
         summaryReportService.appendRecord("LEANIX_HOST: ${propertiesConfiguration.leanIxHost}\n")
 
@@ -58,7 +59,6 @@ class VsmSbomBoosterApplication(
 
         repositories.forEach {
             processService.processRepository(
-                propertiesConfiguration,
                 credentials.username,
                 credentials.token,
                 it
