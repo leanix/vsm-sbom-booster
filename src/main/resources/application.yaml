@@ -7,7 +7,7 @@ leanix:
     dev-mode: ${DEV_MODE:false}
     http-proxy: ${HTTP_PROXY:}
     https-proxy: ${HTTPS_PROXY:}
-    allow-no-component-sboms: ${ALLOW_NO_COMPONENT_SBOMS:true}
+    allow-no-component-sboms: ${ALLOW_NO_COMPONENT_SBOMS:false}
 
     # LeanIX configs
     leanIx-host: ${LEANIX_HOST:}
