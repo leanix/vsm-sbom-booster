@@ -28,7 +28,9 @@ dependencies {
 	implementation("com.expediagroup:graphql-kotlin-spring-client:6.2.2")
 	implementation("org.cyclonedx:cyclonedx-core-java:7.2.0")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testImplementation("io.mockk:mockk:1.13.8")
+	testImplementation("com.ninja-squad:springmockk:4.0.2"){
+		exclude(module = "mockito-core")
+	}
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 }
 

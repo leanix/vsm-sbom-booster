@@ -11,10 +11,11 @@ import org.springframework.web.client.RestTemplate
 import java.util.*
 
 @Service
-class MtMService {
+class MtMService(
+    private val restTemplate: RestTemplate
+) {
 
     fun getAccessToken(host: String, lxToken: String): String {
-        val restTemplate = RestTemplate()
         val headers = HttpHeaders()
 
         val auth = "apitoken:$lxToken"
