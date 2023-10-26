@@ -95,7 +95,7 @@ The second `-v` param is the path to temporary folder that the `vsm-sbom-booster
 
 `DEV_MODE`(optional): This is a flag to enable/disable the dev mode. When enabled, all logs from ORT containers will be preserved in the temp folder location and the ORT project folders will be retained. Additionally, the logging level for the ORT containers will be set to DEBUG. The processing of each repository consists of three separate phases (download, analyze and generate_sbom) that are facilitated by the ORT software. The produced logs are saved in the temp folder using the `<repository_name>_<phase>_log.txt` naming pattern.This is useful for debugging purposes. Default: false
 
-`ALLOW_NO_COMPONENT_SBOMS`(optional): This is a flag to enable/disable the submission of SBOM files without any components. Default: true
+`ALLOW_NO_COMPONENT_SBOMS`(optional): This is a flag to enable/disable the submission of SBOM files without any components. Default: false
 
 `HTTP_PROXY`: (optional): The HTTP proxy to use for the ORT container (See https://github.com/oss-review-toolkit/ort#environment-variables). Default: none
 
