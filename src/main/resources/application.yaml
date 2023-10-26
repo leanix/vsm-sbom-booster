@@ -7,8 +7,8 @@ leanix:
     dev-mode: ${DEV_MODE:false}
     http-proxy: ${HTTP_PROXY:}
     https-proxy: ${HTTPS_PROXY:}
-    ort-image: ${ORT_IMAGE:leanixacrpublic.azurecr.io/ort}
     allow-no-component-sboms: ${ALLOW_NO_COMPONENT_SBOMS:false}
+    ort-image: ${ORT_IMAGE:leanixacrpublic.azurecr.io/ort}
 
     # LeanIX configs
     leanIx-host: ${LEANIX_HOST:}
