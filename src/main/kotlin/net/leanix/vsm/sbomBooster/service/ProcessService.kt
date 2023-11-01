@@ -20,7 +20,7 @@ class ProcessService(
     private val cycloneDxCliService: CycloneDxCliService,
     private val vsmDiscoveryService: VsmDiscoveryService,
     private val mtMService: MtMService,
-    private val sbomBuilder: SbomBuilder,
+    private val sbomBuilderService: SbomBuilderService,
     private val propertiesConfiguration: PropertiesConfiguration
 ) {
     companion object {
@@ -101,7 +101,13 @@ class ProcessService(
         ) {
             logger.info("Beginning to generate CycloneDX file from GitHub Graph")
             val created =
-                sbomBuilder.fromGithubDependencyGraph(propertiesConfiguration, token, repository, gitProvidedSbomFolder)
+                sbomBuilderService.fromGithubDependencyGraph(
+                    propertiesConfiguration,
+                    token,
+                    repository,
+                    gitProvidedSbomFolder
+                )
+            logger.info("Finished generating CycloneDX file from GitHub Graph")
             return if (created)
                 gitProvidedSbomFolder
             else

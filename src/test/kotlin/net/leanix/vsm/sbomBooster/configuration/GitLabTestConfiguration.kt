@@ -43,7 +43,8 @@ class GitLabTestConfiguration : GenericTestConfiguration() {
             ortService.downloadProject(
                 any(),
                 "gitlabUsername",
-                "gitlabToken"
+                "gitlabToken",
+                any()
             )
         } returns "downloadedFolder"
         every { ortService.analyzeProject(any(), "downloadedFolder") } returns "ortFolder"

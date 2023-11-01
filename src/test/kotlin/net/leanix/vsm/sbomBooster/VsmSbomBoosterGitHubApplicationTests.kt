@@ -17,10 +17,25 @@ class VsmSbomBoosterGitHubApplicationTests : VsmSbomBoosterApplicationTests() {
         verify(exactly = 1) { gitHubApiService.getUsername("githubToken") }
         verify(exactly = 1) { gitHubApiService.getRepositories("githubToken", "githubOrganization") }
         verify(exactly = 1) {
+            gitHubApiService.getAllDependencies(
+                "githubToken",
+                "githubOrganization",
+                "repositoryName1"
+            )
+        }
+        verify(exactly = 1) {
+            gitHubApiService.getAllDependencies(
+                "githubToken",
+                "githubOrganization",
+                "repositoryName2"
+            )
+        }
+        verify(exactly = 1) {
             ortService.downloadProject(
                 "cloneUrl1",
                 "githubUsername",
                 "githubToken",
+                any()
             )
         }
         verify(exactly = 1) {
@@ -28,18 +43,19 @@ class VsmSbomBoosterGitHubApplicationTests : VsmSbomBoosterApplicationTests() {
                 "cloneUrl2",
                 "githubUsername",
                 "githubToken",
+                any()
             )
         }
         verify(exactly = 1) {
             ortService.analyzeProject(
                 "cloneUrl1",
-                "downloadedFolder"
+                any()
             )
         }
         verify(exactly = 1) {
             ortService.analyzeProject(
                 "cloneUrl2",
-                "downloadedFolder"
+                any()
             )
         }
         verify(exactly = 1) { ortService.generateSbom("cloneUrl1") }

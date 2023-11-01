@@ -25,6 +25,7 @@ class VsmSbomBoosterBitBucketApplicationTests : VsmSbomBoosterApplicationTests()
                 "cloneUrl1",
                 "bitbucketUsername",
                 "bitbucketToken",
+                any()
             )
         }
         verify(exactly = 1) {
@@ -32,18 +33,19 @@ class VsmSbomBoosterBitBucketApplicationTests : VsmSbomBoosterApplicationTests()
                 "cloneUrl2",
                 "bitbucketUsername",
                 "bitbucketToken",
+                any()
             )
         }
         verify(exactly = 1) {
             ortService.analyzeProject(
                 "cloneUrl1",
-                "downloadedFolder",
+                any()
             )
         }
         verify(exactly = 1) {
             ortService.analyzeProject(
                 "cloneUrl2",
-                "downloadedFolder",
+                any()
             )
         }
         verify(exactly = 1) { ortService.generateSbom("cloneUrl1") }

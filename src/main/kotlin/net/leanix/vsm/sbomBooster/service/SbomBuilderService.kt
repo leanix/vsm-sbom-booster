@@ -19,12 +19,12 @@ import java.nio.file.Paths
 import java.util.Date
 
 @Service
-class SbomBuilder(
+class SbomBuilderService(
     private val gitHubApiService: GitHubApiService,
     private val clearlyDefinedService: ClearlyDefinedService
 ) {
     companion object {
-        private val logger: Logger = LoggerFactory.getLogger(SbomBuilder::class.java)
+        private val logger: Logger = LoggerFactory.getLogger(SbomBuilderService::class.java)
         const val SBOM_FILE_NAME: String = "bom.cyclonedx.json"
     }
 

@@ -47,7 +47,8 @@ class BitBucketTestConfiguration : GenericTestConfiguration() {
             ortService.downloadProject(
                 any(),
                 "bitbucketUsername",
-                "bitbucketToken"
+                "bitbucketToken",
+                any()
             )
         } returns "downloadedFolder"
         every { ortService.analyzeProject(any(), "downloadedFolder") } returns "ortFolder"

@@ -97,6 +97,8 @@ The second `-v` param is the path to temporary folder that the `vsm-sbom-booster
 
 `ALLOW_NO_COMPONENT_SBOMS`(optional): This is a flag to enable/disable the submission of SBOM files without any components. Default: false
 
+`ORT_IMAGE` (optional): The pre-built image of ORT to use for generating SBOMs. Useful when you need to inject certificates or custom build tool settings e.g. a maven settings file. Default: `leanixacrpublic.azurecr.io/ort`
+
 `HTTP_PROXY`: (optional): The HTTP proxy to use for the ORT container (See https://github.com/oss-review-toolkit/ort#environment-variables). Default: none
 
 `HTTPS_PROXY`: (optional): The HTTPS proxy to use for the ORT container (See https://github.com/oss-review-toolkit/ort#environment-variables). Default: none
@@ -123,7 +125,9 @@ The second `-v` param is the path to temporary folder that the `vsm-sbom-booster
 
 `GITHUB_ORGANIZATION`: The GitHub organization name which `vsm-sbom-booster` shall scan and try to generate the SBOMs for.
 
-`GITHUB_API_HOST` (optional): if you want to connect the `vsm-sbom-booster` with GitHub Enterprise you will need to provide the host where the GitHub GraphQL API is exposed. e.g. For `https://ghe.domain.com` you would provide `ghe.domain.com`
+`GITHUB_API_HOST` (optional): If you want to connect the `vsm-sbom-booster` with GitHub Enterprise you will need to provide the host where the GitHub GraphQL API is exposed. e.g. For `https://ghe.domain.com` you would provide `ghe.domain.com`
+
+`GITHUB_DEPENDENCY_GRAPH` (optional): GitHub automatically detects some dependencies using its [dependency graph](https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/about-the-dependency-graph) which will be converted to an SBOM and merged with the ORT generated SBOM to produce a more complete SBOM. Default: true
 
 #### GITLAB (only if `GIT_PROVIDER` is `GITLAB`)
 
@@ -149,7 +153,7 @@ While ORT already has advanced capabilities to understand on the surface of the 
 
 Also, currently the prototype does not filter out any repositories that evidently are not real services (e.g. repositories with markdown only, script with out any dependencies) and will hence fail to generate a SBOM. Likewise, the true success rate might even then be higher.
 
-Today, the prototype only supports to scan GitHub Cloud and GitHub Enterprise. We are open to contribution to extend the functionality to other Git Providers. The prototype only needs the list of repository URLs as input and is otherwise Git Provider agnostic.
+Today, the prototype only supports to scan GitHub Cloud, GitHub Enterprise, GitLab Cloud, GitLab Self-Hosted, & BitBucket Cloud. We are open to contribution to extend the functionality to other Git Providers. The prototype only needs the list of repository URLs as input and is otherwise Git Provider agnostic.
 
 We also encourage contributions to extend this prototype to be able to run when package manager files changes, to bring it closer the real build. 
 
@@ -162,6 +166,55 @@ For a full list, please refer to the [ORT documentation](https://github.com/oss-
 
 ### Logging
 The `vsm-sbom-booster` will per default have verbose logs to understand the inner-workings, as well as any errors. It will also create a summary report in the mounted volume on your host machine. The summary report file name is `summaryReport_<timestamp>.txt`. It contains details for which repository an SBOM file was generated and for which it failed. There are cases where `vsm-sbom-booster` will have to forcefully shutdown stale jobs after a specific amount of time. Keep in mind that those repositories will not be present in the summary report file.
+
+### Using over SSL Intercepting proxy
+
+1. Build your own ORT image adding the certificate:
+
+```shell
+FROM leanixacrpublic.azurecr.io/ort
+
+USER root
+
+COPY YOUR-CERTIFICATE-HERE /usr/local/share/ca-certificates/YOUR-CERTIFICATE-HERE
+RUN update-ca-certificates 
+RUN keytool -import -trustcacerts -keystore $JAVA_HOME/lib/security/cacerts  -storepass changeit -noprompt -alias YOUR-CERTIFICATE-HERE -file /usr/local/share/ca-certificates/YOUR-CERTIFICATE-HERE
+
+```
+
+> Note: You should add an additional COPY and the final RUN for each certificate you need to insert into the image.
+
+```shell
+docker build -t my-ort-with-cert .
+```
+
+2. Build your own VSM SBOM Booster image adding the certificate:
+
+```shell
+FROM leanixacrpublic.azurecr.io/vsm-sbom-booster
+
+USER root
+
+COPY YOUR-CERTIFICATE-HERE /usr/local/share/ca-certificates/YOUR-CERTIFICATE-HERE
+RUN update-ca-certificates 
+RUN keytool -import -trustcacerts -keystore $JAVA_HOME/lib/security/cacerts  -storepass changeit -noprompt -alias YOUR-CERTIFICATE-HERE -file /usr/local/share/ca-certificates/YOUR-CERTIFICATE-HERE
+
+```
+
+> Note: You should add an additional COPY and the final RUN for each certificate you need to insert into the image.
+
+```shell
+docker build -t my-vsm-sbom-booster-with-cert .
+```
+
+3. Run your VSM SBOM Booster image and override the `ORT_IMAGE` environment variable:
+```shell
+docker run --pull=always --rm \
+          ...
+           -e ORT_IMAGE='my-ort-with-cert' \
+          ...
+           my-vsm-sbom-booster-with-cert
+```
 
 ## A word on support
 This project is an experimental prototype. Regular LeanIX service SLA and support do not apply to this project. We also maintain this prototype sporadically.

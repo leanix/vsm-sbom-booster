@@ -2,11 +2,14 @@ package net.leanix.vsm.sbomBooster
 
 import com.ninjasquad.springmockk.MockkBean
 import net.leanix.vsm.sbomBooster.service.BitBucketApiService
+import net.leanix.vsm.sbomBooster.service.ClearlyDefinedService
+import net.leanix.vsm.sbomBooster.service.CycloneDxCliService
 import net.leanix.vsm.sbomBooster.service.ExitScheduler
 import net.leanix.vsm.sbomBooster.service.GitHubApiService
 import net.leanix.vsm.sbomBooster.service.GitLabApiService
 import net.leanix.vsm.sbomBooster.service.MtMService
 import net.leanix.vsm.sbomBooster.service.OrtService
+import net.leanix.vsm.sbomBooster.service.SbomBuilderService
 import net.leanix.vsm.sbomBooster.service.SummaryReportService
 import net.leanix.vsm.sbomBooster.service.VsmDiscoveryService
 import org.springframework.beans.factory.annotation.Autowired
@@ -44,4 +47,13 @@ class VsmSbomBoosterApplicationTests {
 
     @Autowired
     internal lateinit var ortService: OrtService
+
+    @Autowired
+    internal lateinit var clearlyDefinedService: ClearlyDefinedService
+
+    @Autowired
+    internal lateinit var cycloneDxCliService: CycloneDxCliService
+
+    @Autowired
+    internal lateinit var sbomBuilderService: SbomBuilderService
 }

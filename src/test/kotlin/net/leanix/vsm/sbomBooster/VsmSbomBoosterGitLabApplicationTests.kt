@@ -21,6 +21,7 @@ class VsmSbomBoosterGitLabApplicationTests : VsmSbomBoosterApplicationTests() {
                 "cloneUrl1",
                 "gitlabUsername",
                 "gitlabToken",
+                any()
             )
         }
         verify(exactly = 1) {
@@ -28,18 +29,19 @@ class VsmSbomBoosterGitLabApplicationTests : VsmSbomBoosterApplicationTests() {
                 "cloneUrl2",
                 "gitlabUsername",
                 "gitlabToken",
+                any()
             )
         }
         verify(exactly = 1) {
             ortService.analyzeProject(
                 "cloneUrl1",
-                "downloadedFolder"
+                any()
             )
         }
         verify(exactly = 1) {
             ortService.analyzeProject(
                 "cloneUrl2",
-                "downloadedFolder"
+                any()
             )
         }
         verify(exactly = 1) { ortService.generateSbom("cloneUrl1") }

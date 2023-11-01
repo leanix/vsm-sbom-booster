@@ -2,10 +2,12 @@ package net.leanix.vsm.sbomBooster.service
 
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.verify
 import net.leanix.vsm.sbomBooster.configuration.PropertiesConfiguration
 import net.leanix.vsm.sbomBooster.domain.Repository
 import net.leanix.vsm.sbomBooster.domain.VsmDiscoveryItem
+import net.leanix.vsm.sbomBooster.domain.VsmSbomBoosterUtils
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -14,6 +16,8 @@ class ProcessServiceTests {
     private val vsmDiscoveryService: VsmDiscoveryService = mockk()
     private val mtMService: MtMService = mockk()
     private val ortService: OrtService = mockk()
+    private val cycloneDxCliService: CycloneDxCliService = mockk()
+    private val sbomBuilderService: SbomBuilderService = mockk()
     private lateinit var repository: Repository
     private lateinit var username: String
     private lateinit var token: String
@@ -36,18 +40,31 @@ class ProcessServiceTests {
 
         every { propertiesConfiguration.leanIxHost } returns "leanIxHost"
         every { propertiesConfiguration.leanIxToken } returns "leanIxToken"
+        every { propertiesConfiguration.gitProvider } returns "GITHUB"
+        every { propertiesConfiguration.githubDependencyGraph } returns true
+
+        mockkObject(VsmSbomBoosterUtils)
+        every { VsmSbomBoosterUtils.deleteFolder(any()) } returns Unit
+        every { VsmSbomBoosterUtils.writeStringToFile(any(), any(), any()) } returns Unit
+
+        every {
+            sbomBuilderService.fromGithubDependencyGraph(propertiesConfiguration, "token", repository, any())
+        } returns true
 
         every {
             ortService.downloadProject(
                 repository.cloneUrl,
                 username,
-                token
+                token,
+                any()
             )
         } returns "downloadedFolder"
 
-        every { ortService.analyzeProject(repository.cloneUrl, "downloadedFolder") } returns "ortFolder"
+        every { ortService.analyzeProject(repository.cloneUrl, any()) } returns "ortFolder"
 
         every { ortService.generateSbom(repository.cloneUrl) } returns Unit
+
+        every { cycloneDxCliService.mergeSboms(any(), any(), any()) } returns Unit
 
         every {
             mtMService.getAccessToken(
@@ -55,9 +72,6 @@ class ProcessServiceTests {
                 propertiesConfiguration.leanIxToken
             )
         } returns accessToken
-
-        every { ortService.deleteDownloadedFolder("downloadedFolder") } returns Unit
-        every { ortService.deleteDownloadedFolder("ortFolder") } returns Unit
 
         every { mtMService.getAccessToken("leanIxHost", "leanIxToken") } returns accessToken
 
@@ -80,8 +94,15 @@ class ProcessServiceTests {
     @Test
     fun `processRepository function calls the correct sequence of functions when devMode is disabled`() {
         every { propertiesConfiguration.devMode } returns false
-        val processService = ProcessService(ortService, vsmDiscoveryService, mtMService)
-        processService.processRepository(propertiesConfiguration, username, token, repository)
+        val processService = ProcessService(
+            ortService,
+            cycloneDxCliService,
+            vsmDiscoveryService,
+            mtMService,
+            sbomBuilderService,
+            propertiesConfiguration
+        )
+        processService.processRepository(username, token, repository)
 
         verify(exactly = 1) {
             vsmDiscoveryService.sendToVsm(
@@ -89,7 +110,7 @@ class ProcessServiceTests {
                 "eu",
                 VsmDiscoveryItem(
                     repository.cloneUrl,
-                    "ortFolder",
+                    "cloneUrl_merged_sbom",
                     repository.sourceType,
                     repository.sourceInstance,
                     repository.name,
@@ -97,15 +118,24 @@ class ProcessServiceTests {
                 )
             )
         }
-        verify(exactly = 1) { ortService.deleteDownloadedFolder("downloadedFolder") }
-        verify(exactly = 1) { ortService.deleteDownloadedFolder("ortFolder") }
+        verify(exactly = 1) { VsmSbomBoosterUtils.deleteFolder(match { it.matches("cloneUrl_\\w{10}".toRegex()) }) }
+        verify(exactly = 1) { VsmSbomBoosterUtils.deleteFolder("cloneUrl_merged_sbom",) }
+        verify(exactly = 1) { VsmSbomBoosterUtils.deleteFolder("cloneUrl_GIT_Provided_SBOM") }
+        verify(exactly = 1) { VsmSbomBoosterUtils.deleteFolder("cloneUrl_merged_sbom") }
     }
 
     @Test
     fun `processRepository function calls the correct sequence of functions when devMode is enabled`() {
         every { propertiesConfiguration.devMode } returns true
-        val processService = ProcessService(ortService, vsmDiscoveryService, mtMService)
-        processService.processRepository(propertiesConfiguration, username, token, repository)
+        val processService = ProcessService(
+            ortService,
+            cycloneDxCliService,
+            vsmDiscoveryService,
+            mtMService,
+            sbomBuilderService,
+            propertiesConfiguration
+        )
+        processService.processRepository(username, token, repository)
 
         verify(exactly = 1) {
             vsmDiscoveryService.sendToVsm(
@@ -113,7 +143,7 @@ class ProcessServiceTests {
                 "eu",
                 VsmDiscoveryItem(
                     repository.cloneUrl,
-                    "ortFolder",
+                    "cloneUrl_merged_sbom",
                     repository.sourceType,
                     repository.sourceInstance,
                     repository.name,
@@ -121,7 +151,9 @@ class ProcessServiceTests {
                 )
             )
         }
-        verify(exactly = 1) { ortService.deleteDownloadedFolder("downloadedFolder") }
-        verify(exactly = 0) { ortService.deleteDownloadedFolder("ortFolder") }
+        verify(exactly = 1) { VsmSbomBoosterUtils.deleteFolder(match { it.matches("cloneUrl_\\w{10}".toRegex()) }) }
+        verify(exactly = 0) { VsmSbomBoosterUtils.deleteFolder("ortFolder") }
+        verify(exactly = 0) { VsmSbomBoosterUtils.deleteFolder("downloadedFolder_GIT_Provided_SBOM") }
+        verify(exactly = 0) { VsmSbomBoosterUtils.deleteFolder("downloadedFolder_merged_sbom") }
     }
 }

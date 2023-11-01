@@ -18,6 +18,7 @@ open class GenericTestConfiguration {
         every { propertiesConfiguration.mountedVolume } returns "mountedVolume"
         every { propertiesConfiguration.allowNoComponentSboms } returns false
         every { propertiesConfiguration.devMode } returns false
+        every { propertiesConfiguration.ortImage } returns "leanixacrpublic.azurecr.io/ort"
         every { propertiesConfiguration.leanIxHost } returns "de"
         every { propertiesConfiguration.leanIxToken } returns "dummyLeanIxToken"
         every { propertiesConfiguration.sourceInstance } returns "sourceInstance"
