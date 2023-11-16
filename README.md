@@ -168,7 +168,14 @@ This project is an experimental prototype. Regular LeanIX service SLA and suppor
 
 Yet, we are open to discuss the work and are of course open to any contributions by the community 💙
 
-## Contribution 
-If you find this project useful, but you're missing some functionality, feel free to open a PR with a description of the use case for the change.
+## Contributing
 
-Likewise, if you bump into any bugs feel free to open an issue. It might be helpful to check with [ORT open issues](https://github.com/oss-review-toolkit/ort/issues), if it's something that's already known.
+We welcome contributions to the VSM SBOM Booster project. If you're looking to contribute:
+
+1. **Issues**: Feel free to open an [issue](https://github.com/leanix/vsm-sbom-booster/issues) if you find a bug or want to suggest an enhancement. Please provide as much context as possible.
+
+2. **Pull requests**: If you'd like to contribute code, make sure to read our [Contribution Guidelines](./CONTRIBUTING.md) before submitting a pull request.
+
+3. **Security**: If you find a vulnerability, please review our [Security Policy](./SECURITY.md) on how to report it.
+
+Thank you for your interest in contributing to our project!
