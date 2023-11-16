@@ -170,12 +170,14 @@ Yet, we are open to discuss the work and are of course open to any contributions
 
 ## Contributing
 
-We welcome contributions to the VSM SBOM Booster project. If you're looking to contribute:
+We welcome contributions to the VSM SBOM Booster project.If you're looking to contribute:
 
-1. **Issues**: Feel free to open an [issue](https://github.com/leanix/vsm-sbom-booster/issues) if you find a bug or want to suggest an enhancement. Please provide as much context as possible.
+1. Please check with [ORT open issues](https://github.com/oss-review-toolkit/ort/issues), if it's something that's already known.
 
-2. **Pull requests**: If you'd like to contribute code, make sure to read our [Contribution Guidelines](./CONTRIBUTING.md) before submitting a pull request.
+2. **Issues**: Feel free to open an [issue](https://github.com/leanix/vsm-sbom-booster/issues) if you find a bug or want to suggest an enhancement. Please provide as much context as possible.
 
-3. **Security**: If you find a vulnerability, please review our [Security Policy](./SECURITY.md) on how to report it.
+3. **Pull requests**: If you'd like to contribute code, make sure to read our [Contribution Guidelines](./CONTRIBUTING.md) before submitting a pull request.
+
+4. **Security**: If you find a vulnerability, please review our [Security Policy](./SECURITY.md) on how to report it.
 
 Thank you for your interest in contributing to our project!
