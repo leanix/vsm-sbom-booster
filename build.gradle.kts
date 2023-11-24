@@ -26,7 +26,7 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("org.reactivestreams:reactive-streams:1.0.4")
 	implementation("com.expediagroup:graphql-kotlin-spring-client:6.2.2")
-	implementation("org.cyclonedx:cyclonedx-core-java:7.2.0")
+	implementation("org.cyclonedx:cyclonedx-core-java:8.0.3")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("com.ninja-squad:springmockk:4.0.2"){
 		exclude(module = "mockito-core")
