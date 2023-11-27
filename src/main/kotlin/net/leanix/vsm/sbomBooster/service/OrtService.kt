@@ -115,8 +115,7 @@ class OrtService(
             "-f", "CycloneDX",
             "-i", "/project/${projectUrl.substringAfterLast("/")}_ORT_produced_files/analyzer-result.yml",
             "-o", "/project/${projectUrl.substringAfterLast("/")}_ORT_produced_files",
-            "-O", "CycloneDx=output.file.formats=json",
-            "-O", "CycloneDx=schema.version=1.4"
+            "-O", "CycloneDx=output.file.formats=json"
         )
 
         addOrtArgs(args, ortArgs)
