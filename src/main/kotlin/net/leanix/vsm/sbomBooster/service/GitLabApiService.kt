@@ -70,12 +70,12 @@ class GitLabApiService(
                         if (resultscounter != 0) {
                             afterParameter = result.data?.group?.projects?.pageInfo?.endCursor
                             result.data?.group?.projects?.nodes?.forEach {
-
-                                val sourceInstance: String = if (propertiesConfiguration.sourceInstance == "")
+                                val sourceInstance: String = if (propertiesConfiguration.sourceInstance == "") {
                                     it?.fullPath?.substringBeforeLast("/")
                                         ?: propertiesConfiguration.gitlabGroup
-                                else
+                                } else {
                                     propertiesConfiguration.sourceInstance
+                                }
 
                                 repositoriesList.add(
                                     Repository(

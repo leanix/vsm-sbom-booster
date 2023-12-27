@@ -9,7 +9,6 @@ class RestTemplateConfiguration {
 
     @Bean
     fun restTemplate(): RestTemplate {
-
         return RestTemplate()
     }
 }

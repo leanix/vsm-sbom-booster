@@ -47,8 +47,10 @@ class OrtService(
             "leanixacrpublic.azurecr.io/ort",
             loggingParameter(),
             "download",
-            "--project-url", projectUrl,
-            "-o", "/project/$downloadFolder"
+            "--project-url",
+            projectUrl,
+            "-o",
+            "/project/$downloadFolder"
         )
         addOrtArgs(args, ortArgs)
 
@@ -65,13 +67,16 @@ class OrtService(
     }
 
     fun analyzeProject(projectUrl: String, downloadFolder: String): String {
-
         val ortFolder = "${projectUrl.substringAfterLast("/")}_ORT_produced_files"
 
         val args = mutableListOf(
-            "docker", "run", "--rm",
-            "-v", "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}:/project",
-            "-e", "ORT_CONFIG_DIR=/project/config",
+            "docker",
+            "run",
+            "--rm",
+            "-v",
+            "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}:/project",
+            "-e",
+            "ORT_CONFIG_DIR=/project/config",
         )
 
         addProxyEnvValues(args)
@@ -80,8 +85,10 @@ class OrtService(
             "leanixacrpublic.azurecr.io/ort",
             loggingParameter(),
             "analyze",
-            "-i", "/project/$downloadFolder",
-            "-o", "/project/$ortFolder",
+            "-i",
+            "/project/$downloadFolder",
+            "-o",
+            "/project/$ortFolder",
         )
 
         addOrtArgs(args, ortArgs)
@@ -102,9 +109,13 @@ class OrtService(
 
     fun generateSbom(projectUrl: String) {
         val args = mutableListOf(
-            "docker", "run", "--rm",
-            "-v", "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}:/project",
-            "-e", "ORT_CONFIG_DIR=/project/config",
+            "docker",
+            "run",
+            "--rm",
+            "-v",
+            "${Paths.get(propertiesConfiguration.mountedVolume).toAbsolutePath()}:/project",
+            "-e",
+            "ORT_CONFIG_DIR=/project/config",
         )
 
         addProxyEnvValues(args)
