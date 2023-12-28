@@ -71,10 +71,11 @@ class GitHubApiService(
                             afterParameter = result.data?.viewer?.organization?.repositories?.edges?.last()?.cursor
                             result.data?.viewer?.organization?.repositories?.edges?.forEach {
                                 // Figure out what sourceInstance to use
-                                val sourceInstance: String = if (propertiesConfiguration.sourceInstance == "")
+                                val sourceInstance: String = if (propertiesConfiguration.sourceInstance == "") {
                                     propertiesConfiguration.githubOrganization
-                                else
+                                } else {
                                     propertiesConfiguration.sourceInstance
+                                }
 
                                 repositoriesList.add(
                                     Repository(

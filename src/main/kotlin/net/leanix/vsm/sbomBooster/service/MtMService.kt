@@ -29,7 +29,8 @@ class MtMService(
         val httpEntity: HttpEntity<*> = HttpEntity<MultiValueMap<String, String>>(requestBody, headers)
 
         val responseEntity = restTemplate.postForEntity(
-            "https://$host.leanix.net/services/mtm/v1/oauth2/token ", httpEntity,
+            "https://$host.leanix.net/services/mtm/v1/oauth2/token ",
+            httpEntity,
             MtMResponse::class.java
         )
 

@@ -45,7 +45,9 @@ class BitBucketApiService(
         val url = pageUrl ?: "https://api.bitbucket.org/2.0/repositories/$organization"
 
         val responseEntity = restTemplate.exchange(
-            url, HttpMethod.GET, httpEntity,
+            url,
+            HttpMethod.GET,
+            httpEntity,
             BitBucketRepositoriesResponse::class.java
         )
         val bbRepositoriesResponse = responseEntity.body?.values ?: emptyList()
@@ -54,10 +56,11 @@ class BitBucketApiService(
         for (bbRepo in bbRepositoriesResponse) {
             val cloneUrl =
                 bbRepo.links.clone.firstOrNull { it.name == "https" }?.href?.replaceFirst("[^/]+@".toRegex(), "")
-            val sourceInstance = if (propertiesConfiguration.sourceInstance.isBlank())
+            val sourceInstance = if (propertiesConfiguration.sourceInstance.isBlank()) {
                 propertiesConfiguration.bitbucketWorkspace
-            else
+            } else {
                 propertiesConfiguration.sourceInstance
+            }
 
             repositories.add(
                 Repository(
@@ -93,7 +96,8 @@ class BitBucketApiService(
             HttpEntity(requestBody, headers)
 
         val responseEntity = restTemplate.postForEntity(
-            "https://bitbucket.org/site/oauth2/access_token", httpEntity,
+            "https://bitbucket.org/site/oauth2/access_token",
+            httpEntity,
             BitBucketAuthResponse::class.java
         )
 

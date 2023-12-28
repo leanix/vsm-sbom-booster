@@ -5,7 +5,7 @@ ENV JAVA_HOME=/opt/java/openjdk
 COPY --from=jdk_alpine $JAVA_HOME $JAVA_HOME
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
-RUN apk -U add curl ca-certificates && rm -f /var/cache/apk/*
+RUN apk --no-cache upgrade && apk --no-cache add curl ca-certificates
 
 COPY build/libs/*.jar app.jar
 

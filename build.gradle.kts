@@ -2,12 +2,12 @@ import com.expediagroup.graphql.plugin.gradle.tasks.GraphQLGenerateClientTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "3.0.8"
-	id("io.spring.dependency-management") version "1.1.0"
-	id("com.expediagroup.graphql") version "6.5.0"
-	id("io.gitlab.arturbosch.detekt") version "1.21.0"
-	kotlin("jvm") version "1.7.22"
-	kotlin("plugin.spring") version "1.7.22"
+	id("org.springframework.boot") version "3.2.0"
+	id("io.spring.dependency-management") version "1.1.4"
+	id("com.expediagroup.graphql") version "7.0.2"
+	id("io.gitlab.arturbosch.detekt") version "1.23.4"
+	kotlin("jvm") version "1.9.21"
+	kotlin("plugin.spring") version "1.9.21"
 }
 
 group = "net.leanix"
@@ -25,8 +25,11 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("org.reactivestreams:reactive-streams:1.0.4")
-	implementation("com.expediagroup:graphql-kotlin-spring-client:6.2.2")
+	implementation("com.expediagroup:graphql-kotlin-spring-client:7.0.2")
 	implementation("org.cyclonedx:cyclonedx-core-java:8.0.3")
+	// Explicitly fetching transitive dependencies to avoid known vulnerabilities
+	implementation("ch.qos.logback:logback-core:1.4.14")
+	implementation("ch.qos.logback:logback-classic:1.4.14")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("com.ninja-squad:springmockk:4.0.2"){
 		exclude(module = "mockito-core")
@@ -68,8 +71,13 @@ detekt {
 	parallel = true
 	buildUponDefaultConfig = true
 	dependencies {
-		detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.21.0")
+		detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.4")
 	}
 }
 
-ext["snakeyaml.version"] = "2.2"
+configurations.all {
+	resolutionStrategy {
+		force("ch.qos.logback:logback-core:1.4.14")
+		force("ch.qos.logback:logback-classic:1.4.14")
+	}
+}

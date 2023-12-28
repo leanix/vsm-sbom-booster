@@ -104,7 +104,8 @@ class VsmDiscoveryService(
         val httpEntity: HttpEntity<MultiValueMap<String, HttpEntity<*>>> = HttpEntity(multipartBody, headers)
 
         val responseEntity = restTemplate.postForEntity(
-            "https://$region-vsm.leanix.net/services/vsm/discovery/v1/service", httpEntity,
+            "https://$region-vsm.leanix.net/services/vsm/discovery/v1/service",
+            httpEntity,
             String::class.java
         )
 
