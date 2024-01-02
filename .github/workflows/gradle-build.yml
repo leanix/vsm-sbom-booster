@@ -15,10 +15,7 @@ jobs:
     steps:
       - name: Check branch name
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]] 
-          || [[ "${{ github.ref }}" =~ ^refs/heads/feature/.*$ ]] 
-          || [[ "${{ github.ref }}" =~ ^refs/heads/release/v.*$ ]] 
-          || [[ "${{ github.ref }}" =~ ^refs/heads/bug/.*$ ]] ; then
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]] || [[ "${{ github.ref }}" =~ ^refs/heads/feature/.*$ ]] || [[ "${{ github.ref }}" =~ ^refs/heads/release/v.*$ ]] || [[ "${{ github.ref }}" =~ ^refs/heads/bug/.*$ ]] ; then
             echo "Branch naming is correct!"
           else
             echo "Invalid branch name! Correct format: 'feature/<branch-name>' or 'bug/<branch-name>' or release/vx.x.x"
