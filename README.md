@@ -1,3 +1,5 @@
+[![REUSE status](https://api.reuse.software/badge/github.com/leanix/vsm-sbom-booster)](https://api.reuse.software/info/github.com/leanix/vsm-sbom-booster)
+
 ## VSM SBOM Booster
 
 The `vsm-sbom-booster`is a prototype to centralize & automate ([CycloneDX](https://cyclonedx.org/capabilities/sbom/)) SBOM generation. This helps alleviate impediments with the tedious CI/CD-based approach to amend hundreds of CI/CD pipelines and asking engineers to do yet another task.
