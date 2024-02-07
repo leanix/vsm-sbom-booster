@@ -1,0 +1,9 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: vsm-sbom-booster
+Upstream-Contact: SAP Open Source Program Office ospo@sap.com
+Source: https://github.com/leanix/vsm-sbom-booster
+
+Files: *
+Copyright: 2024 SAP SE or an SAP affiliate company and vsm-sbom-booster contributors.
+License: Apache-2.0
+
