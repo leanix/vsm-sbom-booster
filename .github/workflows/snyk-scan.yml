@@ -11,11 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - name: Get credentials
-        uses: leanix/secrets-action@master
-        with:
-          secret-store-credentials: ${{ secrets.INJECTED_SECRET_STORE_CREDENTIALS }}
+
       - uses: snyk/actions/gradle@master
         with:
           command: monitor
           args: --all-projects --exclude=k8s -d --severity-threshold=high --remote-repo-url=leanix/vsm-sbom-booster --project-tags=Team=Cider
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
