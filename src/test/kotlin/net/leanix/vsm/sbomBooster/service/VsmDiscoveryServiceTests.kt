@@ -6,9 +6,9 @@ import io.mockk.mockkStatic
 import io.mockk.verify
 import net.leanix.vsm.sbomBooster.configuration.PropertiesConfiguration
 import net.leanix.vsm.sbomBooster.domain.VsmDiscoveryItem
-import org.cyclonedx.BomParserFactory
 import org.cyclonedx.model.Bom
 import org.cyclonedx.model.Component
+import org.cyclonedx.parsers.BomParserFactory
 import org.cyclonedx.parsers.Parser
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

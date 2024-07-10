@@ -26,7 +26,7 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("org.reactivestreams:reactive-streams:1.0.4")
 	implementation("com.expediagroup:graphql-kotlin-spring-client:7.0.2")
-	implementation("org.cyclonedx:cyclonedx-core-java:8.0.3")
+	implementation("org.cyclonedx:cyclonedx-core-java:9.0.4")
 	// Explicitly fetching transitive dependencies to avoid known vulnerabilities
 	implementation("ch.qos.logback:logback-core:1.4.14")
 	implementation("ch.qos.logback:logback-classic:1.4.14")
